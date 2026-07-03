@@ -1,0 +1,13 @@
+# CMake/build outputs
+build/
+build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.o
+
+# Runtime outputs
+video/output-video/
+output*.mp4
+*.log

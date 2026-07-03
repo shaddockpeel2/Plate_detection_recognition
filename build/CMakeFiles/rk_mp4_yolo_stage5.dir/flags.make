@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/cat/mpp-main/yolo26videeotest/main2/include -I/home/cat/mpp-main/yolo26videeotest/main2/../yolo26/rknpu2/3rdparty/mpp/include -I/home/cat/mpp-main/yolo26videeotest/main2/../yolo26/rknpu2/3rdparty/rga/RK3588/include -I/home/cat/mpp-main/yolo26videeotest/main2/../yolo26/rknpu2/runtime/RK3588/Linux/librknn_api/include
+CXX_INCLUDES = -I/home/cat/mpp-main/yolo26videeotest/main2/include -I/home/cat/mpp-main/yolo26videeotest/main2/third_party/rockchip/mpp/include -I/home/cat/mpp-main/yolo26videeotest/main2/third_party/rockchip/rga/RK3588/include -I/home/cat/mpp-main/yolo26videeotest/main2/third_party/rockchip/rknn/RK3588/Linux/librknn_api/include
 
 CXX_FLAGS = -fPIE -Wall -Wextra -std=gnu++11
 

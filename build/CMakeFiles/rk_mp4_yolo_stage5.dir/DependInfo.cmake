@@ -17,9 +17,9 @@ set(CMAKE_CXX_COMPILER_ID "GNU")
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "../include"
-  "../../yolo26/rknpu2/3rdparty/mpp/include"
-  "../../yolo26/rknpu2/3rdparty/rga/RK3588/include"
-  "../../yolo26/rknpu2/runtime/RK3588/Linux/librknn_api/include"
+  "../third_party/rockchip/mpp/include"
+  "../third_party/rockchip/rga/RK3588/include"
+  "../third_party/rockchip/rknn/RK3588/Linux/librknn_api/include"
   )
 
 # Targets to which this target links.

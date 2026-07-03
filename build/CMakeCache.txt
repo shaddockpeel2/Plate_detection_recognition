@@ -186,6 +186,9 @@ CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 //pkg-config executable
 PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/bin/pkg-config
 
+//Optional external rknpu2 SDK path
+RKNPU2_DIR:PATH=
+
 //No help, variable specified on the command line.
 TARGET_SOC:UNINITIALIZED=rk3588
 
