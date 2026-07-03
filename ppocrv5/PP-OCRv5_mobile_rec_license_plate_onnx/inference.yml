@@ -1,0 +1,115 @@
+Global:
+  model_name: PP-OCRv5_mobile_rec
+Hpi:
+  backend_configs:
+    paddle_infer:
+      trt_dynamic_shapes: &id001
+        x:
+        - - 1
+          - 3
+          - 48
+          - 160
+        - - 1
+          - 3
+          - 48
+          - 320
+        - - 8
+          - 3
+          - 48
+          - 3200
+    tensorrt:
+      dynamic_shapes: *id001
+PreProcess:
+  transform_ops:
+  - DecodeImage:
+      channel_first: false
+      img_mode: BGR
+  - MultiLabelEncode:
+      gtc_encode: NRTRLabelEncode
+  - RecResizeImg:
+      image_shape:
+      - 3
+      - 48
+      - 320
+  - KeepKeys:
+      keep_keys:
+      - image
+      - label_ctc
+      - label_gtc
+      - length
+      - valid_ratio
+PostProcess:
+  name: CTCLabelDecode
+  character_dict:
+  - 京
+  - 津
+  - 沪
+  - 渝
+  - 冀
+  - 豫
+  - 云
+  - 辽
+  - 黑
+  - 湘
+  - 皖
+  - 鲁
+  - 新
+  - 苏
+  - 浙
+  - 赣
+  - 鄂
+  - 桂
+  - 甘
+  - 晋
+  - 蒙
+  - 陕
+  - 吉
+  - 闽
+  - 贵
+  - 粤
+  - 青
+  - 藏
+  - 川
+  - 宁
+  - 琼
+  - 使
+  - 领
+  - 警
+  - 学
+  - 港
+  - 澳
+  - 挂
+  - '0'
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
+  - '6'
+  - '7'
+  - '8'
+  - '9'
+  - A
+  - B
+  - C
+  - D
+  - E
+  - F
+  - G
+  - H
+  - J
+  - K
+  - L
+  - M
+  - N
+  - P
+  - Q
+  - R
+  - S
+  - T
+  - U
+  - V
+  - W
+  - X
+  - Y
+  - Z

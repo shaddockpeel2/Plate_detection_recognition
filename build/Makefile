@@ -142,6 +142,33 @@ rk_mp4_yolo_stage5/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/build
 .PHONY : rk_mp4_yolo_stage5/fast
 
+src/bytetrack.o: src/bytetrack.cpp.o
+
+.PHONY : src/bytetrack.o
+
+# target to build an object file
+src/bytetrack.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/bytetrack.cpp.o
+.PHONY : src/bytetrack.cpp.o
+
+src/bytetrack.i: src/bytetrack.cpp.i
+
+.PHONY : src/bytetrack.i
+
+# target to preprocess a source file
+src/bytetrack.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/bytetrack.cpp.i
+.PHONY : src/bytetrack.cpp.i
+
+src/bytetrack.s: src/bytetrack.cpp.s
+
+.PHONY : src/bytetrack.s
+
+# target to generate assembly for a file
+src/bytetrack.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/bytetrack.cpp.s
+.PHONY : src/bytetrack.cpp.s
+
 src/decoder_thread.o: src/decoder_thread.cpp.o
 
 .PHONY : src/decoder_thread.o
@@ -223,6 +250,33 @@ src/inference_thread.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/inference_thread.cpp.s
 .PHONY : src/inference_thread.cpp.s
 
+src/license_plate_ocr.o: src/license_plate_ocr.cpp.o
+
+.PHONY : src/license_plate_ocr.o
+
+# target to build an object file
+src/license_plate_ocr.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/license_plate_ocr.cpp.o
+.PHONY : src/license_plate_ocr.cpp.o
+
+src/license_plate_ocr.i: src/license_plate_ocr.cpp.i
+
+.PHONY : src/license_plate_ocr.i
+
+# target to preprocess a source file
+src/license_plate_ocr.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/license_plate_ocr.cpp.i
+.PHONY : src/license_plate_ocr.cpp.i
+
+src/license_plate_ocr.s: src/license_plate_ocr.cpp.s
+
+.PHONY : src/license_plate_ocr.s
+
+# target to generate assembly for a file
+src/license_plate_ocr.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/license_plate_ocr.cpp.s
+.PHONY : src/license_plate_ocr.cpp.s
+
 src/main.o: src/main.cpp.o
 
 .PHONY : src/main.o
@@ -249,6 +303,33 @@ src/main.s: src/main.cpp.s
 src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
+
+src/plate_ocr_stage.o: src/plate_ocr_stage.cpp.o
+
+.PHONY : src/plate_ocr_stage.o
+
+# target to build an object file
+src/plate_ocr_stage.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_ocr_stage.cpp.o
+.PHONY : src/plate_ocr_stage.cpp.o
+
+src/plate_ocr_stage.i: src/plate_ocr_stage.cpp.i
+
+.PHONY : src/plate_ocr_stage.i
+
+# target to preprocess a source file
+src/plate_ocr_stage.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_ocr_stage.cpp.i
+.PHONY : src/plate_ocr_stage.cpp.i
+
+src/plate_ocr_stage.s: src/plate_ocr_stage.cpp.s
+
+.PHONY : src/plate_ocr_stage.s
+
+# target to generate assembly for a file
+src/plate_ocr_stage.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_ocr_stage.cpp.s
+.PHONY : src/plate_ocr_stage.cpp.s
 
 src/postprocess_osd_thread.o: src/postprocess_osd_thread.cpp.o
 
@@ -340,6 +421,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... rk_mp4_yolo_stage5"
+	@echo "... src/bytetrack.o"
+	@echo "... src/bytetrack.i"
+	@echo "... src/bytetrack.s"
 	@echo "... src/decoder_thread.o"
 	@echo "... src/decoder_thread.i"
 	@echo "... src/decoder_thread.s"
@@ -349,9 +433,15 @@ help:
 	@echo "... src/inference_thread.o"
 	@echo "... src/inference_thread.i"
 	@echo "... src/inference_thread.s"
+	@echo "... src/license_plate_ocr.o"
+	@echo "... src/license_plate_ocr.i"
+	@echo "... src/license_plate_ocr.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/plate_ocr_stage.o"
+	@echo "... src/plate_ocr_stage.i"
+	@echo "... src/plate_ocr_stage.s"
 	@echo "... src/postprocess_osd_thread.o"
 	@echo "... src/postprocess_osd_thread.i"
 	@echo "... src/postprocess_osd_thread.s"

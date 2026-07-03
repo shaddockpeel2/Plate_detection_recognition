@@ -1,6 +1,6 @@
 # RK3588 MP4 YOLO Pipeline
 
-这是一个面向 RK3588 / aarch64 Linux 的 C++ 视频推理流水线示例。项目从 MP4 文件读取视频帧，经过 Rockchip MPP 硬解、RGA 预处理、RKNN 推理、后处理/OSD，再通过 MPP 编码输出 MP4。
+这是一个面向 RK3588 / aarch64 Linux 的 C++ 视频推理流水线示例。项目从 MP4 文件读取视频帧，经过 Rockchip MPP 硬解、RGA 预处理、RKNN 推理、后处理/OSD，再通过 MPP 编码输出 MP4。目标是车牌识别，涉及yolo和ocr，目前完成车牌检测部分。
 
 ## 功能链路
 

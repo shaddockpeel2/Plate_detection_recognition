@@ -183,6 +183,9 @@ CMAKE_STRIP:FILEPATH=/usr/bin/strip
 // Studio IDE projects all commands are done without /nologo.
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
+//The directory containing a CMake configuration file for OpenCV.
+OpenCV_DIR:PATH=/usr/lib/aarch64-linux-gnu/cmake/opencv4
+
 //pkg-config executable
 PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/bin/pkg-config
 
@@ -203,6 +206,9 @@ pkgcfg_lib_FFMPEG_avformat:FILEPATH=/usr/lib/aarch64-linux-gnu/libavformat.so
 
 //Path to a library.
 pkgcfg_lib_FFMPEG_avutil:FILEPATH=/usr/lib/aarch64-linux-gnu/libavutil.so
+
+//Path to a library.
+pkgcfg_lib_FREETYPE_freetype:FILEPATH=/usr/lib/aarch64-linux-gnu/libfreetype.so
 
 //Value Computed by CMake
 rk_mp4_yolo_stage2_BINARY_DIR:STATIC=/home/cat/mpp-main/yolo26videeotest/main2/build
@@ -412,17 +418,58 @@ FFMPEG_libavutil_LIBDIR:INTERNAL=/usr/lib/aarch64-linux-gnu
 FFMPEG_libavutil_MODULE_NAME:INTERNAL=libavutil
 FFMPEG_libavutil_PREFIX:INTERNAL=/usr
 FFMPEG_libavutil_VERSION:INTERNAL=56.51.100
+//Details about finding OpenCV
+FIND_PACKAGE_MESSAGE_DETAILS_OpenCV:INTERNAL=[/usr][cfound components: core imgproc ][v4.5.1()]
 //Details about finding PkgConfig
 FIND_PACKAGE_MESSAGE_DETAILS_PkgConfig:INTERNAL=[/usr/bin/pkg-config][v0.29.2()]
+FREETYPE_CFLAGS:INTERNAL=-I/usr/include/freetype2;-I/usr/include/libpng16
+FREETYPE_CFLAGS_I:INTERNAL=
+FREETYPE_CFLAGS_OTHER:INTERNAL=
+FREETYPE_FOUND:INTERNAL=1
+FREETYPE_INCLUDEDIR:INTERNAL=/usr/include
+FREETYPE_INCLUDE_DIRS:INTERNAL=/usr/include/freetype2;/usr/include/libpng16
+FREETYPE_LDFLAGS:INTERNAL=-lfreetype
+FREETYPE_LDFLAGS_OTHER:INTERNAL=
+FREETYPE_LIBDIR:INTERNAL=/usr/lib/aarch64-linux-gnu
+FREETYPE_LIBRARIES:INTERNAL=freetype
+FREETYPE_LIBRARY_DIRS:INTERNAL=
+FREETYPE_LIBS:INTERNAL=
+FREETYPE_LIBS_L:INTERNAL=
+FREETYPE_LIBS_OTHER:INTERNAL=
+FREETYPE_LIBS_PATHS:INTERNAL=
+FREETYPE_MODULE_NAME:INTERNAL=freetype2
+FREETYPE_PREFIX:INTERNAL=/usr
+FREETYPE_STATIC_CFLAGS:INTERNAL=-I/usr/include/freetype2;-I/usr/include/libpng16
+FREETYPE_STATIC_CFLAGS_I:INTERNAL=
+FREETYPE_STATIC_CFLAGS_OTHER:INTERNAL=
+FREETYPE_STATIC_INCLUDE_DIRS:INTERNAL=/usr/include/freetype2;/usr/include/libpng16
+FREETYPE_STATIC_LDFLAGS:INTERNAL=-lfreetype;-lpng16;-lm;-lz;-lm;-lz;-lbrotlidec;-lbrotlicommon
+FREETYPE_STATIC_LDFLAGS_OTHER:INTERNAL=
+FREETYPE_STATIC_LIBDIR:INTERNAL=
+FREETYPE_STATIC_LIBRARIES:INTERNAL=freetype;png16;m;z;m;z;brotlidec;brotlicommon
+FREETYPE_STATIC_LIBRARY_DIRS:INTERNAL=
+FREETYPE_STATIC_LIBS:INTERNAL=
+FREETYPE_STATIC_LIBS_L:INTERNAL=
+FREETYPE_STATIC_LIBS_OTHER:INTERNAL=
+FREETYPE_STATIC_LIBS_PATHS:INTERNAL=
+FREETYPE_VERSION:INTERNAL=23.4.17
+FREETYPE_freetype2_INCLUDEDIR:INTERNAL=
+FREETYPE_freetype2_LIBDIR:INTERNAL=
+FREETYPE_freetype2_PREFIX:INTERNAL=
+FREETYPE_freetype2_VERSION:INTERNAL=
 //ADVANCED property for variable: PKG_CONFIG_EXECUTABLE
 PKG_CONFIG_EXECUTABLE-ADVANCED:INTERNAL=1
 __pkg_config_arguments_FFMPEG:INTERNAL=REQUIRED;libavformat;libavcodec;libavutil
+__pkg_config_arguments_FREETYPE:INTERNAL=REQUIRED;freetype2
 __pkg_config_checked_FFMPEG:INTERNAL=1
+__pkg_config_checked_FREETYPE:INTERNAL=1
 //ADVANCED property for variable: pkgcfg_lib_FFMPEG_avcodec
 pkgcfg_lib_FFMPEG_avcodec-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: pkgcfg_lib_FFMPEG_avformat
 pkgcfg_lib_FFMPEG_avformat-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: pkgcfg_lib_FFMPEG_avutil
 pkgcfg_lib_FFMPEG_avutil-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: pkgcfg_lib_FREETYPE_freetype
+pkgcfg_lib_FREETYPE_freetype-ADVANCED:INTERNAL=1
 prefix_result:INTERNAL=/usr/lib/aarch64-linux-gnu
 

@@ -20,14 +20,19 @@ else()
 endif()
 
 find_package(PkgConfig REQUIRED)
+find_package(OpenCV REQUIRED COMPONENTS core imgproc)
 pkg_check_modules(FFMPEG REQUIRED libavformat libavcodec libavutil)
+pkg_check_modules(FREETYPE REQUIRED freetype2)
 
 add_executable(rk_mp4_yolo_stage5
   src/main.cpp
   src/decoder_thread.cpp
+  src/bytetrack.cpp
   src/rknn_input_runtime.cpp
   src/preprocess_thread.cpp
   src/inference_thread.cpp
+  src/license_plate_ocr.cpp
+  src/plate_ocr_stage.cpp
   src/postprocess_osd_thread.cpp
   src/encoder_writer_thread.cpp
 )
@@ -37,7 +42,9 @@ target_include_directories(rk_mp4_yolo_stage5 PRIVATE
   ${MPP_DIR}/include
   ${RGA_DIR}/include
   ${RKNN_RUNTIME_DIR}/include
+  ${OpenCV_INCLUDE_DIRS}
   ${FFMPEG_INCLUDE_DIRS}
+  ${FREETYPE_INCLUDE_DIRS}
 )
 
 if(USE_VENDOR_RK_LIBS)
@@ -53,6 +60,8 @@ endif()
 
 target_link_libraries(rk_mp4_yolo_stage5 PRIVATE
   ${FFMPEG_LIBRARIES}
+  ${OpenCV_LIBS}
+  ${FREETYPE_LIBRARIES}
   rockchip_mpp
   rga
   rknn_api

@@ -1,7 +1,9 @@
 #pragma once
 
+#include "bytetrack.hpp"
 #include "decoder_thread.hpp"
 #include "pipeline_types.hpp"
+#include "plate_ocr_stage.hpp"
 
 #include <cstddef>
 
@@ -24,6 +26,8 @@ struct PostprocessOsdConfig {
   int model_height = 640;
   int line_thickness = 3;
   bool draw_osd = true;
+  PlateOcrStageConfig plate_ocr;
+  ByteTrackConfig tracker;
   bool verbose = false;
   std::size_t output_queue_capacity = 4;
 };

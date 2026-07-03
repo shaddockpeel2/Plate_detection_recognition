@@ -6,15 +6,36 @@
 #include "preprocess_thread.hpp"
 #include "rknn_input_runtime.hpp"
 
+#include <algorithm>
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <thread>
+
+namespace {
+
+bool arg_enabled(const char* value) {
+  return value != nullptr && std::strcmp(value, "off") != 0 && std::strcmp(value, "0") != 0 &&
+         std::strcmp(value, "false") != 0;
+}
+
+int parse_int_arg(int argc, char** argv, int index, int fallback) {
+  return argc > index ? std::atoi(argv[index]) : fallback;
+}
+
+float parse_float_arg(int argc, char** argv, int index, float fallback) {
+  return argc > index ? static_cast<float>(std::atof(argv[index])) : fallback;
+}
+
+}  // namespace
 
 int main(int argc, char** argv) {
   const char* default_video = "/home/cat/mpp-main/yolo26videeotest/main2/video/output_5s.mp4";
   const char* default_model = "/home/cat/mpp-main/yolo26videeotest/main2/car-v8/v8-car-relu-3588.rknn";
   const char* default_output = "/home/cat/mpp-main/yolo26videeotest/main2/output_stage5.mp4";
+  const char* default_ocr_model = "/home/cat/mpp-main/yolo26videeotest/main2/ppocrv5/PP-OCRv5_mobile_rec_license_plate.rknn";
+  const char* default_ocr_vocab = "/home/cat/mpp-main/yolo26videeotest/main2/ppocrv5/model/license_plate_dict.txt";
 
   rkai::DecoderConfig decoder_config;
   decoder_config.input_path = argc > 1 ? argv[1] : default_video;
@@ -44,6 +65,14 @@ int main(int argc, char** argv) {
   postprocess_config.model_width = 640;
   postprocess_config.model_height = 640;
   postprocess_config.draw_osd = true;
+  postprocess_config.plate_ocr.enabled = argc > 4 && arg_enabled(argv[4]);
+  postprocess_config.plate_ocr.recognizer.model_path = argc > 4 && arg_enabled(argv[4]) ? argv[4] : default_ocr_model;
+  postprocess_config.plate_ocr.recognizer.vocab_path = argc > 5 ? argv[5] : default_ocr_vocab;
+  postprocess_config.plate_ocr.recognizer.verbose = false;
+  postprocess_config.plate_ocr.ocr_interval_frames = std::max(1, parse_int_arg(argc, argv, 6, 15));
+  postprocess_config.plate_ocr.max_cache_age_frames = std::max(1, parse_int_arg(argc, argv, 7, 90));
+  postprocess_config.plate_ocr.min_ocr_score = parse_float_arg(argc, argv, 8, 0.80f);
+  postprocess_config.plate_ocr.verbose = argc > 9 && arg_enabled(argv[9]);
   postprocess_config.verbose = false;
   postprocess_config.output_queue_capacity = 8;
 

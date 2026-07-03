@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <vector>
 
 extern "C" {
@@ -59,11 +60,15 @@ using InferenceResultQueue = BlockingQueue<InferenceResultPtr>;
 
 struct Detection {
   int class_id = 0;
+  int track_id = -1;
   float score = 0.0f;
   float x1 = 0.0f;
   float y1 = 0.0f;
   float x2 = 0.0f;
   float y2 = 0.0f;
+  std::string plate_text;
+  float plate_score = 0.0f;
+  bool plate_recognized = false;
 };
 
 struct OsdFrame {

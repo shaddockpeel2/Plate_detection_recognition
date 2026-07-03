@@ -6,10 +6,18 @@
 #include <cstdio>
 #include <cstring>
 #include <limits>
+#include <map>
+#include <string>
 #include <vector>
+
+#include "RgaUtils.h"
+#include "im2d.h"
+#include "rga.h"
 
 extern "C" {
 #include <rockchip/mpp_buffer.h>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 }
 
 namespace rkai {
@@ -451,7 +459,48 @@ std::vector<Detection> decode_detections(const PostprocessOsdConfig& config, con
   }
 }
 
+bool fill_rect_rga(const DecodedFrame& frame, const im_rect& rect, int color) {
+  if (frame.dma_fd < 0 || rect.width <= 0 || rect.height <= 0) {
+    return false;
+  }
+  rga_buffer_t dst = wrapbuffer_fd(frame.dma_fd,
+                                   frame.hor_stride,
+                                   frame.ver_stride,
+                                   RK_FORMAT_YCbCr_420_SP,
+                                   frame.hor_stride,
+                                   frame.ver_stride);
+  const IM_STATUS status = imfill(dst, rect, color, IM_SYNC);
+  return status == IM_STATUS_SUCCESS;
+}
+
+bool draw_rect_rga(const DecodedFrame& frame, const Detection& det, int thickness) {
+  if (thickness <= 0 || frame.dma_fd < 0) {
+    return false;
+  }
+
+  const int x1 = clamp_int(det.x1, 0, frame.width - 1);
+  const int y1 = clamp_int(det.y1, 0, frame.height - 1);
+  const int x2 = clamp_int(det.x2, 0, frame.width - 1);
+  const int y2 = clamp_int(det.y2, 0, frame.height - 1);
+  if (x2 <= x1 || y2 <= y1) {
+    return false;
+  }
+
+  const int t = std::max(1, thickness);
+  constexpr int kNv12White = 0x80EB;
+  const im_rect top{x1, y1, x2 - x1 + 1, std::min(t, y2 - y1 + 1)};
+  const im_rect bottom{x1, std::max(y1, y2 - t + 1), x2 - x1 + 1, std::min(t, y2 - y1 + 1)};
+  const im_rect left{x1, y1, std::min(t, x2 - x1 + 1), y2 - y1 + 1};
+  const im_rect right{std::max(x1, x2 - t + 1), y1, std::min(t, x2 - x1 + 1), y2 - y1 + 1};
+
+  return fill_rect_rga(frame, top, kNv12White) && fill_rect_rga(frame, bottom, kNv12White) &&
+         fill_rect_rga(frame, left, kNv12White) && fill_rect_rga(frame, right, kNv12White);
+}
+
 void draw_rect_y_plane(const DecodedFrame& frame, const Detection& det, int thickness) {
+  if (draw_rect_rga(frame, det, thickness)) {
+    return;
+  }
   if (!frame.frame || thickness <= 0) {
     return;
   }
@@ -492,6 +541,397 @@ void draw_rect_y_plane(const DecodedFrame& frame, const Detection& det, int thic
   }
 }
 
+bool digit_pixel(int digit, int row, int col) {
+  static constexpr uint8_t kDigits[10][5] = {
+      {0b111, 0b101, 0b101, 0b101, 0b111},
+      {0b010, 0b110, 0b010, 0b010, 0b111},
+      {0b111, 0b001, 0b111, 0b100, 0b111},
+      {0b111, 0b001, 0b111, 0b001, 0b111},
+      {0b101, 0b101, 0b111, 0b001, 0b001},
+      {0b111, 0b100, 0b111, 0b001, 0b111},
+      {0b111, 0b100, 0b111, 0b101, 0b111},
+      {0b111, 0b001, 0b010, 0b010, 0b010},
+      {0b111, 0b101, 0b111, 0b101, 0b111},
+      {0b111, 0b101, 0b111, 0b001, 0b111},
+  };
+  return digit >= 0 && digit <= 9 && row >= 0 && row < 5 && col >= 0 && col < 3 && ((kDigits[digit][row] >> (2 - col)) & 1) != 0;
+}
+
+const uint8_t* glyph_rows(char ch) {
+  static constexpr uint8_t kUnknown[5] = {0b111, 0b001, 0b010, 0b000, 0b010};
+  static constexpr uint8_t kDash[5] = {0b000, 0b000, 0b111, 0b000, 0b000};
+  static constexpr uint8_t kSpace[5] = {0b000, 0b000, 0b000, 0b000, 0b000};
+  static constexpr uint8_t kDigits[10][5] = {
+      {0b111, 0b101, 0b101, 0b101, 0b111}, {0b010, 0b110, 0b010, 0b010, 0b111},
+      {0b111, 0b001, 0b111, 0b100, 0b111}, {0b111, 0b001, 0b111, 0b001, 0b111},
+      {0b101, 0b101, 0b111, 0b001, 0b001}, {0b111, 0b100, 0b111, 0b001, 0b111},
+      {0b111, 0b100, 0b111, 0b101, 0b111}, {0b111, 0b001, 0b010, 0b010, 0b010},
+      {0b111, 0b101, 0b111, 0b101, 0b111}, {0b111, 0b101, 0b111, 0b001, 0b111},
+  };
+  static constexpr uint8_t kLetters[26][5] = {
+      {0b010, 0b101, 0b111, 0b101, 0b101}, {0b110, 0b101, 0b110, 0b101, 0b110},
+      {0b111, 0b100, 0b100, 0b100, 0b111}, {0b110, 0b101, 0b101, 0b101, 0b110},
+      {0b111, 0b100, 0b110, 0b100, 0b111}, {0b111, 0b100, 0b110, 0b100, 0b100},
+      {0b111, 0b100, 0b101, 0b101, 0b111}, {0b101, 0b101, 0b111, 0b101, 0b101},
+      {0b111, 0b010, 0b010, 0b010, 0b111}, {0b001, 0b001, 0b001, 0b101, 0b111},
+      {0b101, 0b101, 0b110, 0b101, 0b101}, {0b100, 0b100, 0b100, 0b100, 0b111},
+      {0b101, 0b111, 0b111, 0b101, 0b101}, {0b101, 0b111, 0b111, 0b111, 0b101},
+      {0b111, 0b101, 0b101, 0b101, 0b111}, {0b111, 0b101, 0b111, 0b100, 0b100},
+      {0b111, 0b101, 0b101, 0b111, 0b001}, {0b111, 0b101, 0b111, 0b110, 0b101},
+      {0b111, 0b100, 0b111, 0b001, 0b111}, {0b111, 0b010, 0b010, 0b010, 0b010},
+      {0b101, 0b101, 0b101, 0b101, 0b111}, {0b101, 0b101, 0b101, 0b101, 0b010},
+      {0b101, 0b101, 0b111, 0b111, 0b101}, {0b101, 0b101, 0b010, 0b101, 0b101},
+      {0b101, 0b101, 0b010, 0b010, 0b010}, {0b111, 0b001, 0b010, 0b100, 0b111},
+  };
+
+  if (ch >= '0' && ch <= '9') {
+    return kDigits[ch - '0'];
+  }
+  if (ch >= 'a' && ch <= 'z') {
+    ch = static_cast<char>(ch - 'a' + 'A');
+  }
+  if (ch >= 'A' && ch <= 'Z') {
+    return kLetters[ch - 'A'];
+  }
+  if (ch == '-') {
+    return kDash;
+  }
+  if (ch == ' ') {
+    return kSpace;
+  }
+  return kUnknown;
+}
+
+void draw_digit_y_plane(uint8_t* y, const DecodedFrame& frame, int digit, int x, int y0, int scale) {
+  constexpr uint8_t kTextLuma = 255;
+  for (int row = 0; row < 5; ++row) {
+    for (int col = 0; col < 3; ++col) {
+      if (!digit_pixel(digit, row, col)) {
+        continue;
+      }
+      for (int dy = 0; dy < scale; ++dy) {
+        for (int dx = 0; dx < scale; ++dx) {
+          const int px = x + col * scale + dx;
+          const int py = y0 + row * scale + dy;
+          if (px >= 0 && px < frame.width && py >= 0 && py < frame.height) {
+            y[py * frame.hor_stride + px] = kTextLuma;
+          }
+        }
+      }
+    }
+  }
+}
+
+void draw_track_id_y_plane(const DecodedFrame& frame, const Detection& det) {
+  if (!frame.frame || det.track_id <= 0) {
+    return;
+  }
+
+  MppBuffer buffer = mpp_frame_get_buffer(frame.frame);
+  if (!buffer) {
+    return;
+  }
+
+  auto* y = static_cast<uint8_t*>(mpp_buffer_get_ptr(buffer));
+  if (!y) {
+    return;
+  }
+
+  int digits[10];
+  int count = 0;
+  int value = det.track_id;
+  do {
+    digits[count++] = value % 10;
+    value /= 10;
+  } while (value > 0 && count < 10);
+
+  const int scale = 3;
+  int x = clamp_int(det.x1, 0, frame.width - 1);
+  const int y0 = std::max(0, clamp_int(det.y1, 0, frame.height - 1) - 5 * scale - 2);
+  for (int i = count - 1; i >= 0; --i) {
+    draw_digit_y_plane(y, frame, digits[i], x, y0, scale);
+    x += 4 * scale;
+  }
+}
+
+std::string make_osd_plate_text(const Detection& det) {
+  std::string ascii;
+  for (unsigned char ch : det.plate_text) {
+    if ((ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || ch == '-') {
+      ascii.push_back(static_cast<char>(ch));
+    }
+  }
+  char score[16];
+  std::snprintf(score, sizeof(score), "-%.2f", det.plate_score);
+  if (ascii.empty()) {
+    ascii = "OCR";
+  }
+  ascii += score;
+  return ascii;
+}
+
+void draw_text_y_plane(const DecodedFrame& frame, const Detection& det, const std::string& text) {
+  if (!frame.frame || text.empty()) {
+    return;
+  }
+
+  MppBuffer buffer = mpp_frame_get_buffer(frame.frame);
+  if (!buffer) {
+    return;
+  }
+
+  auto* y = static_cast<uint8_t*>(mpp_buffer_get_ptr(buffer));
+  if (!y) {
+    return;
+  }
+
+  constexpr uint8_t kTextLuma = 255;
+  const int scale = 3;
+  int x = clamp_int(det.x1, 0, frame.width - 1);
+  int y0 = clamp_int(det.y2, 0, frame.height - 1) + 3;
+  if (y0 + 5 * scale >= frame.height) {
+    y0 = std::max(0, clamp_int(det.y1, 0, frame.height - 1) - 2 * (5 * scale + 2));
+  }
+
+  for (char ch : text) {
+    const uint8_t* rows = glyph_rows(ch);
+    for (int row = 0; row < 5; ++row) {
+      for (int col = 0; col < 3; ++col) {
+        if (((rows[row] >> (2 - col)) & 1) == 0) {
+          continue;
+        }
+        for (int dy = 0; dy < scale; ++dy) {
+          for (int dx = 0; dx < scale; ++dx) {
+            const int px = x + col * scale + dx;
+            const int py = y0 + row * scale + dy;
+            if (px >= 0 && px < frame.width && py >= 0 && py < frame.height) {
+              y[py * frame.hor_stride + px] = kTextLuma;
+            }
+          }
+        }
+      }
+    }
+    x += 4 * scale;
+    if (x >= frame.width) {
+      break;
+    }
+  }
+}
+
+struct TextBitmap {
+  int width = 0;
+  int height = 0;
+  std::vector<uint8_t> alpha;
+};
+
+std::vector<uint32_t> utf8_to_codepoints(const std::string& text) {
+  std::vector<uint32_t> out;
+  for (size_t i = 0; i < text.size();) {
+    const unsigned char c = static_cast<unsigned char>(text[i]);
+    if (c < 0x80) {
+      out.push_back(c);
+      ++i;
+    } else if ((c & 0xE0) == 0xC0 && i + 1 < text.size()) {
+      out.push_back(((c & 0x1F) << 6) | (static_cast<unsigned char>(text[i + 1]) & 0x3F));
+      i += 2;
+    } else if ((c & 0xF0) == 0xE0 && i + 2 < text.size()) {
+      out.push_back(((c & 0x0F) << 12) | ((static_cast<unsigned char>(text[i + 1]) & 0x3F) << 6) |
+                    (static_cast<unsigned char>(text[i + 2]) & 0x3F));
+      i += 3;
+    } else if ((c & 0xF8) == 0xF0 && i + 3 < text.size()) {
+      out.push_back(((c & 0x07) << 18) | ((static_cast<unsigned char>(text[i + 1]) & 0x3F) << 12) |
+                    ((static_cast<unsigned char>(text[i + 2]) & 0x3F) << 6) |
+                    (static_cast<unsigned char>(text[i + 3]) & 0x3F));
+      i += 4;
+    } else {
+      ++i;
+    }
+  }
+  return out;
+}
+
+class TextBitmapCache {
+ public:
+  TextBitmapCache() = default;
+  ~TextBitmapCache() { release(); }
+
+  bool init(const char* font_path, int pixel_size) {
+    release();
+    if (FT_Init_FreeType(&library_) != 0) {
+      return false;
+    }
+    if (FT_New_Face(library_, font_path, 0, &face_) != 0) {
+      release();
+      return false;
+    }
+    pixel_size_ = pixel_size;
+    FT_Set_Pixel_Sizes(face_, 0, static_cast<FT_UInt>(pixel_size_));
+    ready_ = true;
+    return true;
+  }
+
+  bool ready() const { return ready_; }
+
+  const TextBitmap* get(const std::string& text) {
+    auto it = cache_.find(text);
+    if (it != cache_.end()) {
+      return &it->second;
+    }
+    TextBitmap bitmap = render(text);
+    if (bitmap.width <= 0 || bitmap.height <= 0 || bitmap.alpha.empty()) {
+      return nullptr;
+    }
+    auto inserted = cache_.insert(std::make_pair(text, std::move(bitmap)));
+    return &inserted.first->second;
+  }
+
+ private:
+  TextBitmap render(const std::string& text) {
+    TextBitmap out;
+    if (!ready_ || text.empty()) {
+      return out;
+    }
+
+    const auto codepoints = utf8_to_codepoints(text);
+    if (codepoints.empty()) {
+      return out;
+    }
+
+    int pen_x = 2;
+    int max_top = 0;
+    int max_bottom = 0;
+    for (uint32_t cp : codepoints) {
+      if (FT_Load_Char(face_, cp, FT_LOAD_RENDER) != 0) {
+        continue;
+      }
+      const FT_GlyphSlot glyph = face_->glyph;
+      max_top = std::max(max_top, glyph->bitmap_top);
+      max_bottom = std::max(max_bottom, static_cast<int>(glyph->bitmap.rows) - glyph->bitmap_top);
+      pen_x += static_cast<int>(glyph->advance.x >> 6) + 1;
+    }
+
+    out.width = std::max(1, pen_x + 2);
+    out.height = std::max(1, max_top + max_bottom + 4);
+    out.alpha.assign(static_cast<size_t>(out.width) * out.height, 0);
+
+    pen_x = 2;
+    const int baseline = 2 + max_top;
+    for (uint32_t cp : codepoints) {
+      if (FT_Load_Char(face_, cp, FT_LOAD_RENDER) != 0) {
+        continue;
+      }
+      const FT_GlyphSlot glyph = face_->glyph;
+      const FT_Bitmap& bm = glyph->bitmap;
+      const int dst_x = pen_x + glyph->bitmap_left;
+      const int dst_y = baseline - glyph->bitmap_top;
+      for (int row = 0; row < static_cast<int>(bm.rows); ++row) {
+        for (int col = 0; col < static_cast<int>(bm.width); ++col) {
+          const int x = dst_x + col;
+          const int y = dst_y + row;
+          if (x < 0 || x >= out.width || y < 0 || y >= out.height) {
+            continue;
+          }
+          const uint8_t a = bm.buffer[row * bm.pitch + col];
+          uint8_t& dst = out.alpha[static_cast<size_t>(y) * out.width + x];
+          dst = std::max(dst, a);
+        }
+      }
+      pen_x += static_cast<int>(glyph->advance.x >> 6) + 1;
+    }
+    return out;
+  }
+
+  void release() {
+    cache_.clear();
+    if (face_ != nullptr) {
+      FT_Done_Face(face_);
+      face_ = nullptr;
+    }
+    if (library_ != nullptr) {
+      FT_Done_FreeType(library_);
+      library_ = nullptr;
+    }
+    ready_ = false;
+  }
+
+  FT_Library library_ = nullptr;
+  FT_Face face_ = nullptr;
+  int pixel_size_ = 26;
+  bool ready_ = false;
+  std::map<std::string, TextBitmap> cache_;
+};
+
+void blend_text_bitmap_nv12(const DecodedFrame& frame, const Detection& det, const TextBitmap& bitmap) {
+  if (!frame.frame || bitmap.width <= 0 || bitmap.height <= 0 || bitmap.alpha.empty()) {
+    return;
+  }
+  MppBuffer buffer = mpp_frame_get_buffer(frame.frame);
+  if (!buffer) {
+    return;
+  }
+  auto* base = static_cast<uint8_t*>(mpp_buffer_get_ptr(buffer));
+  if (!base) {
+    return;
+  }
+
+  uint8_t* y_plane = base;
+  uint8_t* uv_plane = base + static_cast<size_t>(frame.hor_stride) * frame.ver_stride;
+  int x0 = clamp_int(det.x1, 0, frame.width - 1);
+  int y0 = clamp_int(det.y2, 0, frame.height - 1) + 4;
+  if (y0 + bitmap.height >= frame.height) {
+    y0 = std::max(0, clamp_int(det.y1, 0, frame.height - 1) - bitmap.height - 4);
+  }
+
+  constexpr int text_y = 235;
+  constexpr int text_u = 128;
+  constexpr int text_v = 128;
+  for (int by = 0; by < bitmap.height; ++by) {
+    const int py = y0 + by;
+    if (py < 0 || py >= frame.height) {
+      continue;
+    }
+    for (int bx = 0; bx < bitmap.width; ++bx) {
+      const int px = x0 + bx;
+      if (px < 0 || px >= frame.width) {
+        continue;
+      }
+      const int alpha = bitmap.alpha[static_cast<size_t>(by) * bitmap.width + bx];
+      if (alpha == 0) {
+        continue;
+      }
+      uint8_t& y = y_plane[static_cast<size_t>(py) * frame.hor_stride + px];
+      y = static_cast<uint8_t>((static_cast<int>(y) * (255 - alpha) + text_y * alpha) / 255);
+    }
+  }
+
+  for (int by = 0; by + 1 < bitmap.height; by += 2) {
+    const int py = y0 + by;
+    if (py < 0 || py >= frame.height) {
+      continue;
+    }
+    for (int bx = 0; bx + 1 < bitmap.width; bx += 2) {
+      const int px = x0 + bx;
+      if (px < 0 || px + 1 >= frame.width) {
+        continue;
+      }
+      int alpha = 0;
+      alpha += bitmap.alpha[static_cast<size_t>(by) * bitmap.width + bx];
+      alpha += bitmap.alpha[static_cast<size_t>(by) * bitmap.width + bx + 1];
+      alpha += bitmap.alpha[static_cast<size_t>(by + 1) * bitmap.width + bx];
+      alpha += bitmap.alpha[static_cast<size_t>(by + 1) * bitmap.width + bx + 1];
+      alpha /= 4;
+      if (alpha == 0) {
+        continue;
+      }
+      const int uv_x = px & ~1;
+      const int uv_y = py / 2;
+      uint8_t* uv = uv_plane + static_cast<size_t>(uv_y) * frame.hor_stride + uv_x;
+      uv[0] = static_cast<uint8_t>((static_cast<int>(uv[0]) * (255 - alpha) + text_u * alpha) / 255);
+      uv[1] = static_cast<uint8_t>((static_cast<int>(uv[1]) * (255 - alpha) + text_v * alpha) / 255);
+    }
+  }
+}
+
 }  // namespace
 
 void postprocess_osd_thread(const PostprocessOsdConfig& config,
@@ -502,7 +942,21 @@ void postprocess_osd_thread(const PostprocessOsdConfig& config,
   int64_t processed = 0;
   int64_t total_detections = 0;
   double decode_total_ms = 0.0;
+  double ocr_total_ms = 0.0;
+  double ocr_rga_total_ms = 0.0;
+  double ocr_infer_total_ms = 0.0;
   double osd_total_ms = 0.0;
+  int64_t ocr_attempted = 0;
+  int64_t ocr_recognized = 0;
+  int64_t ocr_cache_hits = 0;
+  ByteTracker tracker(config.tracker);
+  PlateOcrStage plate_ocr;
+  const bool plate_ocr_enabled = config.plate_ocr.enabled && plate_ocr.init(config.plate_ocr);
+  TextBitmapCache text_cache;
+  const bool chinese_text_ready = text_cache.init("/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc", 28);
+  if (!chinese_text_ready) {
+    std::fprintf(stderr, "[OSD] FreeType Chinese text disabled, fallback to ASCII glyphs\n");
+  }
 
   InferenceResultPtr inference;
   while (!stop.stop_requested() && input.pop(inference)) {
@@ -514,13 +968,35 @@ void postprocess_osd_thread(const PostprocessOsdConfig& config,
 
     const auto decode_start = std::chrono::steady_clock::now();
     auto detections = decode_detections(config, *inference);
+    detections = tracker.update(detections, inference->frame->source->frame_id);
     const auto decode_end = std::chrono::steady_clock::now();
     decode_total_ms += std::chrono::duration<double, std::milli>(decode_end - decode_start).count();
+
+    if (plate_ocr_enabled) {
+      const auto ocr_start = std::chrono::steady_clock::now();
+      const PlateOcrStageStats ocr_stats = plate_ocr.process(*inference->frame->source, &detections);
+      const auto ocr_end = std::chrono::steady_clock::now();
+      ocr_total_ms += std::chrono::duration<double, std::milli>(ocr_end - ocr_start).count();
+      ocr_rga_total_ms += ocr_stats.rga_ms;
+      ocr_infer_total_ms += ocr_stats.ocr_ms;
+      ocr_attempted += ocr_stats.attempted;
+      ocr_recognized += ocr_stats.recognized;
+      ocr_cache_hits += ocr_stats.cache_hits;
+    }
 
     const auto osd_start = std::chrono::steady_clock::now();
     if (config.draw_osd) {
       for (const auto& det : detections) {
         draw_rect_y_plane(*inference->frame->source, det, config.line_thickness);
+        draw_track_id_y_plane(*inference->frame->source, det);
+        if (det.plate_recognized) {
+          const TextBitmap* bitmap = chinese_text_ready ? text_cache.get(det.plate_text) : nullptr;
+          if (bitmap != nullptr) {
+            blend_text_bitmap_nv12(*inference->frame->source, det, *bitmap);
+          } else {
+            draw_text_y_plane(*inference->frame->source, det, make_osd_plate_text(det));
+          }
+        }
       }
     }
     const auto osd_end = std::chrono::steady_clock::now();
@@ -548,14 +1024,20 @@ void postprocess_osd_thread(const PostprocessOsdConfig& config,
   const double elapsed_ms = std::chrono::duration<double, std::milli>(stage_end - stage_start).count();
   const double fps = elapsed_ms > 0.0 ? static_cast<double>(processed) * 1000.0 / elapsed_ms : 0.0;
   std::fprintf(stderr,
-               "[PERF] postprocess_osd frames=%ld elapsed_ms=%.3f avg_stage_ms=%.3f fps=%.2f decode_avg_ms=%.3f osd_avg_ms=%.3f total_detections=%ld\n",
+               "[PERF] postprocess_osd frames=%ld elapsed_ms=%.3f avg_stage_ms=%.3f fps=%.2f decode_avg_ms=%.3f ocr_avg_ms=%.3f ocr_rga_avg_ms=%.3f ocr_infer_avg_ms=%.3f osd_avg_ms=%.3f total_detections=%ld ocr_attempted=%ld ocr_recognized=%ld ocr_cache_hits=%ld\n",
                processed,
                elapsed_ms,
                processed > 0 ? elapsed_ms / static_cast<double>(processed) : 0.0,
                fps,
                processed > 0 ? decode_total_ms / static_cast<double>(processed) : 0.0,
+               processed > 0 ? ocr_total_ms / static_cast<double>(processed) : 0.0,
+               ocr_attempted > 0 ? ocr_rga_total_ms / static_cast<double>(ocr_attempted) : 0.0,
+               ocr_attempted > 0 ? ocr_infer_total_ms / static_cast<double>(ocr_attempted) : 0.0,
                processed > 0 ? osd_total_ms / static_cast<double>(processed) : 0.0,
-               total_detections);
+               total_detections,
+               ocr_attempted,
+               ocr_recognized,
+               ocr_cache_hits);
   std::fprintf(stderr, "postprocess_osd thread finished, frames=%ld\n", processed);
   output.close();
 }
