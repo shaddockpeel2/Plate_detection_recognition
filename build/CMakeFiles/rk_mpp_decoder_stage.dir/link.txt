@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/rk_mpp_decoder_stage.dir/src/main.cpp.o CMakeFiles/rk_mpp_decoder_stage.dir/src/decoder_thread.cpp.o -o rk_mpp_decoder_stage  -lavformat -lavcodec -lavutil -lrockchip_mpp -lpthread 
