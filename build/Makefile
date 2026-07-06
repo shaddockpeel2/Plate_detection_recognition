@@ -439,6 +439,33 @@ src/rknn_input_runtime.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/rknn_input_runtime.cpp.s
 .PHONY : src/rknn_input_runtime.cpp.s
 
+src/upload_event.o: src/upload_event.cpp.o
+
+.PHONY : src/upload_event.o
+
+# target to build an object file
+src/upload_event.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/upload_event.cpp.o
+.PHONY : src/upload_event.cpp.o
+
+src/upload_event.i: src/upload_event.cpp.i
+
+.PHONY : src/upload_event.i
+
+# target to preprocess a source file
+src/upload_event.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/upload_event.cpp.i
+.PHONY : src/upload_event.cpp.i
+
+src/upload_event.s: src/upload_event.cpp.s
+
+.PHONY : src/upload_event.s
+
+# target to generate assembly for a file
+src/upload_event.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/upload_event.cpp.s
+.PHONY : src/upload_event.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -481,6 +508,9 @@ help:
 	@echo "... src/rknn_input_runtime.o"
 	@echo "... src/rknn_input_runtime.i"
 	@echo "... src/rknn_input_runtime.s"
+	@echo "... src/upload_event.o"
+	@echo "... src/upload_event.i"
+	@echo "... src/upload_event.s"
 .PHONY : help
 
 

@@ -15,6 +15,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/cat/mpp-main/yolo26videeotest/main2/src/postprocess_osd_thread.cpp" "/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o"
   "/home/cat/mpp-main/yolo26videeotest/main2/src/preprocess_thread.cpp" "/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles/rk_mp4_yolo_stage5.dir/src/preprocess_thread.cpp.o"
   "/home/cat/mpp-main/yolo26videeotest/main2/src/rknn_input_runtime.cpp" "/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles/rk_mp4_yolo_stage5.dir/src/rknn_input_runtime.cpp.o"
+  "/home/cat/mpp-main/yolo26videeotest/main2/src/upload_event.cpp" "/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles/rk_mp4_yolo_stage5.dir/src/upload_event.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

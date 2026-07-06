@@ -8,6 +8,7 @@
 #include <limits>
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "RgaUtils.h"
@@ -937,7 +938,8 @@ void blend_text_bitmap_nv12(const DecodedFrame& frame, const Detection& det, con
 void postprocess_osd_thread(const PostprocessOsdConfig& config,
                             StopFlag& stop,
                             InferenceResultQueue& input,
-                            OsdFrameQueue& output) {
+                            OsdFrameQueue& output,
+                            UploadEventQueue* upload_events) {
   const auto stage_start = std::chrono::steady_clock::now();
   int64_t processed = 0;
   int64_t total_detections = 0;
@@ -950,6 +952,7 @@ void postprocess_osd_thread(const PostprocessOsdConfig& config,
   int64_t ocr_recognized = 0;
   int64_t ocr_cache_hits = 0;
   ByteTracker tracker(config.tracker);
+  UploadEventGate upload_gate(config.upload_event);
   PlateOcrStage plate_ocr;
   const bool plate_ocr_enabled = config.plate_ocr.enabled && plate_ocr.init(config.plate_ocr);
   TextBitmapCache text_cache;
@@ -982,6 +985,15 @@ void postprocess_osd_thread(const PostprocessOsdConfig& config,
       ocr_attempted += ocr_stats.attempted;
       ocr_recognized += ocr_stats.recognized;
       ocr_cache_hits += ocr_stats.cache_hits;
+    }
+
+    const auto selected_upload_events = upload_gate.select_events(inference->frame->source, detections);
+    for (auto& event : selected_upload_events) {
+      if (upload_events != nullptr) {
+        upload_events->try_push(std::move(event));
+      } else {
+        upload_gate.log_event(event);
+      }
     }
 
     const auto osd_start = std::chrono::steady_clock::now();

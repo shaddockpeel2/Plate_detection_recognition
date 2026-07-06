@@ -20,7 +20,7 @@ else()
 endif()
 
 find_package(PkgConfig REQUIRED)
-find_package(OpenCV REQUIRED COMPONENTS core imgproc)
+find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs)
 pkg_check_modules(FFMPEG REQUIRED libavformat libavcodec libavutil)
 pkg_check_modules(FREETYPE REQUIRED freetype2)
 
@@ -34,6 +34,7 @@ add_executable(rk_mp4_yolo_stage5
   src/inference_thread.cpp
   src/license_plate_ocr.cpp
   src/plate_ocr_stage.cpp
+  src/upload_event.cpp
   src/postprocess_osd_thread.cpp
   src/encoder_writer_thread.cpp
 )

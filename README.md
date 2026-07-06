@@ -199,6 +199,276 @@ v4l2-ctl --list-devices
 v4l2-ctl -d /dev/video0 --list-formats-ext
 ```
 
+## 远程车牌事件上报
+
+远程上报链路采用“HTTP 上传截图 + MQTT 发布事件 JSON”的拆分设计：
+
+```text
+YOLO / ByteTrack / OCR
+  -> 上传阈值与去重
+  -> 上传队列
+  -> 上传线程
+  -> 裁剪截图并编码 JPEG
+  -> HTTP 上传图片
+  -> MQTT 发布事件 JSON
+```
+
+关键约束：
+
+```text
+MQTT 只传事件和 image_url，不传图片二进制
+网络请求只发生在上传线程，不阻塞检测、OCR、OSD 和编码主链路
+上传队列满时丢弃新事件，不反压主链路
+默认关闭远程上报，必须显式打开 --upload-event-log
+```
+
+### 服务器端服务
+
+服务器需要准备三类能力：
+
+```text
+1883  MQTT Broker，例如 Mosquitto
+8000  HTTP 图片上传服务，接收 multipart/form-data 字段 file
+80    图片静态访问服务，例如 http://124.220.49.93/images/xxx.jpg
+```
+
+安全组需要放行：
+
+```text
+TCP 1883
+TCP 8000
+TCP 80
+```
+
+图片上传服务约定：
+
+```text
+请求：POST /upload
+字段：file
+返回：JSON
+```
+
+返回值支持两种形式：
+
+```json
+{"url":"/images/rk3588-001_123_7.jpg"}
+```
+
+或：
+
+```json
+{"url":"http://124.220.49.93/images/rk3588-001_123_7.jpg"}
+```
+
+开发板会把返回的 `url` 写进 MQTT 事件的 `image_url` 字段。
+
+可先在服务器或开发板上用一张本地图片验证 HTTP 上传：
+
+```bash
+curl -F "file=@test.jpg" http://124.220.49.93:8000/upload
+```
+
+期望返回类似：
+
+```json
+{"url":"/images/test.jpg"}
+```
+
+并确认图片可以访问：
+
+```bash
+curl -I http://124.220.49.93/images/test.jpg
+```
+
+### 远端 MQTT 订阅验证
+
+当前默认 topic：
+
+```text
+devices/rk3588-001/plate/events
+devices/rk3588-001/status/heartbeat
+devices/rk3588-001/status/error
+```
+
+订阅全部远程上报消息：
+
+```bash
+mosquitto_sub -h 124.220.49.93 -p 1883 \
+  -u rk3588 -P 'Rk3588_Mqtt_123' \
+  -t 'devices/rk3588-001/#' -v
+```
+
+只订阅车牌事件：
+
+```bash
+mosquitto_sub -h 124.220.49.93 -p 1883 \
+  -u rk3588 -P 'Rk3588_Mqtt_123' \
+  -t 'devices/rk3588-001/plate/events' -v
+```
+
+收到的事件结构类似：
+
+```json
+{
+  "device_id": "rk3588-001",
+  "event_id": "rk3588-001-123456-7",
+  "frame_id": 123456,
+  "timestamp_ms": 1720000000000,
+  "track_id": 7,
+  "plate_text": "粤B12345",
+  "plate_score": 0.91,
+  "detect_score": 0.86,
+  "bbox": {
+    "x1": 120,
+    "y1": 240,
+    "x2": 360,
+    "y2": 300
+  },
+  "image_url": "http://124.220.49.93/images/rk3588-001_123456_7.jpg"
+}
+```
+
+### 开发板运行命令
+
+摄像头输入示例：
+
+```bash
+./build/rk_mp4_yolo_stage5 \
+  --input camera \
+  --device /dev/video0 \
+  --width 640 \
+  --height 480 \
+  --fps 25 \
+  --frame-limit 300 \
+  --model ./models/car-v8/v8-car-relu-3588.rknn \
+  --output ./video/output-video/camera-output.mp4 \
+  --ocr-model ./ppocrv5/PP-OCRv5_mobile_rec_license_plate.rknn \
+  --ocr-vocab ./ppocrv5/model/license_plate_dict.txt \
+  --upload-event-log on \
+  --upload-min-detect-score 0.50 \
+  --upload-min-plate-score 0.80 \
+  --upload-track-cooldown-frames 90 \
+  --upload-plate-cooldown-frames 1800 \
+  --upload-queue-capacity 32 \
+  --upload-snapshot-dir ./upload_snapshots \
+  --upload-url http://124.220.49.93:8000/upload \
+  --upload-public-base-url http://124.220.49.93 \
+  --upload-jpeg-quality 85 \
+  --upload-http-timeout-ms 3000 \
+  --mqtt on \
+  --mqtt-host 124.220.49.93 \
+  --mqtt-port 1883 \
+  --mqtt-username rk3588 \
+  --mqtt-password Rk3588_Mqtt_123 \
+  --mqtt-client-id rk3588-001 \
+  --mqtt-topic devices/rk3588-001/plate/events \
+  --mqtt-heartbeat-topic devices/rk3588-001/status/heartbeat \
+  --mqtt-error-topic devices/rk3588-001/status/error \
+  --mqtt-heartbeat-interval-sec 30 \
+  --mqtt-timeout-ms 3000
+```
+
+MP4 输入示例：
+
+```bash
+./build/rk_mp4_yolo_stage5 \
+  --input mp4 \
+  --video ./video/test-video/9s.mp4 \
+  --model ./models/car-v8/v8-car-relu-3588.rknn \
+  --output ./video/output-video/remote-report-test.mp4 \
+  --ocr-model ./ppocrv5/PP-OCRv5_mobile_rec_license_plate.rknn \
+  --ocr-vocab ./ppocrv5/model/license_plate_dict.txt \
+  --upload-event-log on \
+  --upload-url http://124.220.49.93:8000/upload \
+  --upload-public-base-url http://124.220.49.93 \
+  --mqtt on \
+  --mqtt-host 124.220.49.93 \
+  --mqtt-port 1883 \
+  --mqtt-username rk3588 \
+  --mqtt-password Rk3588_Mqtt_123 \
+  --mqtt-client-id rk3588-001 \
+  --mqtt-topic devices/rk3588-001/plate/events \
+  --mqtt-heartbeat-topic devices/rk3588-001/status/heartbeat \
+  --mqtt-error-topic devices/rk3588-001/status/error
+```
+
+### 远程上报参数
+
+```text
+--upload-event-log on/off              开启上传事件判定和上传线程
+--device-id rk3588-001                 设备 ID
+--upload-min-detect-score 0.50         检测置信度阈值
+--upload-min-plate-score 0.80          OCR 车牌置信度阈值
+--upload-track-cooldown-frames 90      同一 track_id 冷却帧数
+--upload-plate-cooldown-frames 1800    同一 plate_text 冷却帧数
+--upload-queue-capacity 32             上传队列容量
+--upload-snapshot-dir ./upload_snapshots
+--upload-url http://124.220.49.93:8000/upload
+--upload-public-base-url http://124.220.49.93
+--upload-jpeg-quality 85
+--upload-http-timeout-ms 3000
+--mqtt on/off
+--mqtt-host 124.220.49.93
+--mqtt-port 1883
+--mqtt-username rk3588
+--mqtt-password Rk3588_Mqtt_123
+--mqtt-client-id rk3588-001
+--mqtt-topic devices/rk3588-001/plate/events
+--mqtt-heartbeat-topic devices/rk3588-001/status/heartbeat
+--mqtt-error-topic devices/rk3588-001/status/error
+--mqtt-heartbeat-interval-sec 30
+--mqtt-timeout-ms 3000
+```
+
+### 验收步骤
+
+1. 先验证 HTTP 图片服务：
+
+```bash
+curl -F "file=@test.jpg" http://124.220.49.93:8000/upload
+```
+
+2. 再打开 MQTT 订阅：
+
+```bash
+mosquitto_sub -h 124.220.49.93 -p 1883 \
+  -u rk3588 -P 'Rk3588_Mqtt_123' \
+  -t 'devices/rk3588-001/#' -v
+```
+
+3. 启动开发板程序，观察日志：
+
+```text
+[UPLOAD_EVENT] ...
+[UPLOAD_THREAD] ... image_path=... image_url=...
+[PERF] upload_event_thread ... http_uploaded=... mqtt_published=...
+```
+
+4. 打开 MQTT 收到的 `image_url`，确认图片可访问。
+
+### 断网验证
+
+断网或服务器不可达时，预期行为是：
+
+```text
+检测、OCR、OSD、视频保存继续运行
+上传线程统计 http_failed 或 mqtt_failed 增加
+上传队列满时 dropped 增加
+程序不退出，主链路不被网络拖慢
+网络恢复后，后续新事件继续上传和发布
+```
+
+建议按顺序验证：
+
+```text
+1. 正常联网运行，确认 http_uploaded 和 mqtt_published 增加
+2. 临时关闭服务器 8000 端口，确认 http_failed 增加但视频继续保存
+3. 临时关闭 MQTT 1883 端口，确认 mqtt_failed 增加但视频继续保存
+4. 恢复服务，制造新车牌事件，确认后续事件能继续上报
+```
+
+当前版本不做本地失败缓存；断网期间失败的事件会丢弃，只保证主链路稳定和网络恢复后的新事件继续上报。
+
 ## 模型文件
 
 当前项目包含两个模型目录：

@@ -48,6 +48,11 @@ int parse_named_int_arg(int argc, char** argv, const char* flag, int fallback) {
   return value ? std::atoi(value) : fallback;
 }
 
+float parse_named_float_arg(int argc, char** argv, const char* flag, float fallback) {
+  const char* value = flag_value(argc, argv, flag, nullptr);
+  return value ? static_cast<float>(std::atof(value)) : fallback;
+}
+
 int parse_int_arg(int argc, char** argv, int index, int fallback) {
   return argc > index ? std::atoi(argv[index]) : fallback;
 }
@@ -118,6 +123,42 @@ int main(int argc, char** argv) {
   postprocess_config.plate_ocr.min_ocr_score = named_args ? static_cast<float>(std::atof(flag_value(argc, argv, "--ocr-min-score", "0.80")))
                                                           : parse_float_arg(argc, argv, 8, 0.80f);
   postprocess_config.plate_ocr.verbose = named_args ? has_flag(argc, argv, "--ocr-verbose") : (argc > 9 && arg_enabled(argv[9]));
+  postprocess_config.upload_event.enabled = arg_enabled(flag_value(argc, argv, "--upload-event-log", "off"));
+  postprocess_config.upload_event.verbose = postprocess_config.upload_event.enabled;
+  postprocess_config.upload_event.device_id = flag_value(argc, argv, "--device-id", "rk3588-001");
+  postprocess_config.upload_event.min_detect_score = parse_named_float_arg(argc, argv, "--upload-min-detect-score", 0.50f);
+  postprocess_config.upload_event.min_plate_score = parse_named_float_arg(argc, argv, "--upload-min-plate-score", 0.80f);
+  postprocess_config.upload_event.track_cooldown_frames =
+      std::max(0, parse_named_int_arg(argc, argv, "--upload-track-cooldown-frames", 90));
+  postprocess_config.upload_event.plate_cooldown_frames =
+      std::max(0, parse_named_int_arg(argc, argv, "--upload-plate-cooldown-frames", 1800));
+  const std::size_t upload_queue_capacity =
+      static_cast<std::size_t>(std::max(1, parse_named_int_arg(argc, argv, "--upload-queue-capacity", 32)));
+  rkai::UploadEventThreadConfig upload_thread_config;
+  upload_thread_config.enabled = postprocess_config.upload_event.enabled;
+  upload_thread_config.verbose = postprocess_config.upload_event.verbose;
+  upload_thread_config.snapshot_dir = flag_value(argc, argv, "--upload-snapshot-dir", "./upload_snapshots");
+  upload_thread_config.upload_url = flag_value(argc, argv, "--upload-url", "");
+  upload_thread_config.public_base_url = flag_value(argc, argv, "--upload-public-base-url", "");
+  upload_thread_config.jpeg_quality =
+      std::max(1, std::min(100, parse_named_int_arg(argc, argv, "--upload-jpeg-quality", 85)));
+  upload_thread_config.http_timeout_ms =
+      std::max(1000, parse_named_int_arg(argc, argv, "--upload-http-timeout-ms", 3000));
+  upload_thread_config.mqtt_enabled = arg_enabled(flag_value(argc, argv, "--mqtt", "off"));
+  upload_thread_config.mqtt_host = flag_value(argc, argv, "--mqtt-host", "");
+  upload_thread_config.mqtt_port = parse_named_int_arg(argc, argv, "--mqtt-port", 1883);
+  upload_thread_config.mqtt_username = flag_value(argc, argv, "--mqtt-username", "");
+  upload_thread_config.mqtt_password = flag_value(argc, argv, "--mqtt-password", "");
+  upload_thread_config.mqtt_client_id = flag_value(argc, argv, "--mqtt-client-id", postprocess_config.upload_event.device_id.c_str());
+  upload_thread_config.mqtt_topic = flag_value(argc, argv, "--mqtt-topic", "devices/rk3588-001/plate/events");
+  upload_thread_config.mqtt_heartbeat_topic =
+      flag_value(argc, argv, "--mqtt-heartbeat-topic", "devices/rk3588-001/status/heartbeat");
+  upload_thread_config.mqtt_error_topic =
+      flag_value(argc, argv, "--mqtt-error-topic", "devices/rk3588-001/status/error");
+  upload_thread_config.mqtt_heartbeat_interval_sec =
+      std::max(0, parse_named_int_arg(argc, argv, "--mqtt-heartbeat-interval-sec", 30));
+  upload_thread_config.mqtt_timeout_ms =
+      std::max(1000, parse_named_int_arg(argc, argv, "--mqtt-timeout-ms", 3000));
   postprocess_config.verbose = false;
   postprocess_config.output_queue_capacity = 8;
 
@@ -143,6 +184,7 @@ int main(int argc, char** argv) {
   rkai::PreprocessedFrameQueue preprocessed_frames(preprocess_config.output_queue_capacity);
   rkai::InferenceResultQueue inference_results(inference_config.output_queue_capacity);
   rkai::OsdFrameQueue osd_frames(postprocess_config.output_queue_capacity);
+  rkai::UploadEventQueue upload_events(upload_queue_capacity);
 
   const auto pipeline_start = std::chrono::steady_clock::now();
   std::thread source([&] {
@@ -159,9 +201,17 @@ int main(int argc, char** argv) {
     rkai::inference_thread(inference_config, stop, preprocessed_frames, inference_results, rknn_inputs);
   });
   std::thread postprocess([&] {
-    rkai::postprocess_osd_thread(postprocess_config, stop, inference_results, osd_frames);
+    rkai::postprocess_osd_thread(postprocess_config,
+                                 stop,
+                                 inference_results,
+                                 osd_frames,
+                                 upload_thread_config.enabled ? &upload_events : nullptr);
   });
   std::thread writer([&] { rkai::encoder_writer_thread(writer_config, stop, osd_frames); });
+  std::thread uploader;
+  if (upload_thread_config.enabled) {
+    uploader = std::thread([&] { rkai::upload_event_thread(upload_thread_config, stop, upload_events); });
+  }
 
   if (source.joinable()) {
     source.join();
@@ -174,6 +224,10 @@ int main(int argc, char** argv) {
   }
   if (postprocess.joinable()) {
     postprocess.join();
+  }
+  upload_events.close();
+  if (uploader.joinable()) {
+    uploader.join();
   }
   if (writer.joinable()) {
     writer.join();

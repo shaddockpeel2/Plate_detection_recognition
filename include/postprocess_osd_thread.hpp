@@ -4,6 +4,7 @@
 #include "decoder_thread.hpp"
 #include "pipeline_types.hpp"
 #include "plate_ocr_stage.hpp"
+#include "upload_event.hpp"
 
 #include <cstddef>
 
@@ -28,6 +29,7 @@ struct PostprocessOsdConfig {
   bool draw_osd = true;
   PlateOcrStageConfig plate_ocr;
   ByteTrackConfig tracker;
+  UploadEventConfig upload_event;
   bool verbose = false;
   std::size_t output_queue_capacity = 4;
 };
@@ -35,6 +37,7 @@ struct PostprocessOsdConfig {
 void postprocess_osd_thread(const PostprocessOsdConfig& config,
                             StopFlag& stop,
                             InferenceResultQueue& input,
-                            OsdFrameQueue& output);
+                            OsdFrameQueue& output,
+                            UploadEventQueue* upload_events = nullptr);
 
 }  // namespace rkai
