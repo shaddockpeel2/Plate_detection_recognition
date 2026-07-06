@@ -169,6 +169,33 @@ src/bytetrack.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/bytetrack.cpp.s
 .PHONY : src/bytetrack.cpp.s
 
+src/camera_source_thread.o: src/camera_source_thread.cpp.o
+
+.PHONY : src/camera_source_thread.o
+
+# target to build an object file
+src/camera_source_thread.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.o
+.PHONY : src/camera_source_thread.cpp.o
+
+src/camera_source_thread.i: src/camera_source_thread.cpp.i
+
+.PHONY : src/camera_source_thread.i
+
+# target to preprocess a source file
+src/camera_source_thread.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.i
+.PHONY : src/camera_source_thread.cpp.i
+
+src/camera_source_thread.s: src/camera_source_thread.cpp.s
+
+.PHONY : src/camera_source_thread.s
+
+# target to generate assembly for a file
+src/camera_source_thread.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.s
+.PHONY : src/camera_source_thread.cpp.s
+
 src/decoder_thread.o: src/decoder_thread.cpp.o
 
 .PHONY : src/decoder_thread.o
@@ -424,6 +451,9 @@ help:
 	@echo "... src/bytetrack.o"
 	@echo "... src/bytetrack.i"
 	@echo "... src/bytetrack.s"
+	@echo "... src/camera_source_thread.o"
+	@echo "... src/camera_source_thread.i"
+	@echo "... src/camera_source_thread.s"
 	@echo "... src/decoder_thread.o"
 	@echo "... src/decoder_thread.i"
 	@echo "... src/decoder_thread.s"

@@ -89,9 +89,22 @@ CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/cat/mpp-main/yolo26videeotest/main2/src/main.cpp -o CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.s
 
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.o: CMakeFiles/rk_mp4_yolo_stage5.dir/flags.make
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.o: ../src/camera_source_thread.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.o -c /home/cat/mpp-main/yolo26videeotest/main2/src/camera_source_thread.cpp
+
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/cat/mpp-main/yolo26videeotest/main2/src/camera_source_thread.cpp > CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.i
+
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/cat/mpp-main/yolo26videeotest/main2/src/camera_source_thread.cpp -o CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.s
+
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/decoder_thread.cpp.o: CMakeFiles/rk_mp4_yolo_stage5.dir/flags.make
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/decoder_thread.cpp.o: ../src/decoder_thread.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/rk_mp4_yolo_stage5.dir/src/decoder_thread.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/rk_mp4_yolo_stage5.dir/src/decoder_thread.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/rk_mp4_yolo_stage5.dir/src/decoder_thread.cpp.o -c /home/cat/mpp-main/yolo26videeotest/main2/src/decoder_thread.cpp
 
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/decoder_thread.cpp.i: cmake_force
@@ -104,7 +117,7 @@ CMakeFiles/rk_mp4_yolo_stage5.dir/src/decoder_thread.cpp.s: cmake_force
 
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/bytetrack.cpp.o: CMakeFiles/rk_mp4_yolo_stage5.dir/flags.make
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/bytetrack.cpp.o: ../src/bytetrack.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/rk_mp4_yolo_stage5.dir/src/bytetrack.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/rk_mp4_yolo_stage5.dir/src/bytetrack.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/rk_mp4_yolo_stage5.dir/src/bytetrack.cpp.o -c /home/cat/mpp-main/yolo26videeotest/main2/src/bytetrack.cpp
 
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/bytetrack.cpp.i: cmake_force
@@ -117,7 +130,7 @@ CMakeFiles/rk_mp4_yolo_stage5.dir/src/bytetrack.cpp.s: cmake_force
 
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/rknn_input_runtime.cpp.o: CMakeFiles/rk_mp4_yolo_stage5.dir/flags.make
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/rknn_input_runtime.cpp.o: ../src/rknn_input_runtime.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/rk_mp4_yolo_stage5.dir/src/rknn_input_runtime.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/rk_mp4_yolo_stage5.dir/src/rknn_input_runtime.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/rk_mp4_yolo_stage5.dir/src/rknn_input_runtime.cpp.o -c /home/cat/mpp-main/yolo26videeotest/main2/src/rknn_input_runtime.cpp
 
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/rknn_input_runtime.cpp.i: cmake_force
@@ -130,7 +143,7 @@ CMakeFiles/rk_mp4_yolo_stage5.dir/src/rknn_input_runtime.cpp.s: cmake_force
 
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/preprocess_thread.cpp.o: CMakeFiles/rk_mp4_yolo_stage5.dir/flags.make
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/preprocess_thread.cpp.o: ../src/preprocess_thread.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/rk_mp4_yolo_stage5.dir/src/preprocess_thread.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/rk_mp4_yolo_stage5.dir/src/preprocess_thread.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/rk_mp4_yolo_stage5.dir/src/preprocess_thread.cpp.o -c /home/cat/mpp-main/yolo26videeotest/main2/src/preprocess_thread.cpp
 
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/preprocess_thread.cpp.i: cmake_force
@@ -143,7 +156,7 @@ CMakeFiles/rk_mp4_yolo_stage5.dir/src/preprocess_thread.cpp.s: cmake_force
 
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/inference_thread.cpp.o: CMakeFiles/rk_mp4_yolo_stage5.dir/flags.make
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/inference_thread.cpp.o: ../src/inference_thread.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/rk_mp4_yolo_stage5.dir/src/inference_thread.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/rk_mp4_yolo_stage5.dir/src/inference_thread.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/rk_mp4_yolo_stage5.dir/src/inference_thread.cpp.o -c /home/cat/mpp-main/yolo26videeotest/main2/src/inference_thread.cpp
 
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/inference_thread.cpp.i: cmake_force
@@ -156,7 +169,7 @@ CMakeFiles/rk_mp4_yolo_stage5.dir/src/inference_thread.cpp.s: cmake_force
 
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/license_plate_ocr.cpp.o: CMakeFiles/rk_mp4_yolo_stage5.dir/flags.make
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/license_plate_ocr.cpp.o: ../src/license_plate_ocr.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/rk_mp4_yolo_stage5.dir/src/license_plate_ocr.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/rk_mp4_yolo_stage5.dir/src/license_plate_ocr.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/rk_mp4_yolo_stage5.dir/src/license_plate_ocr.cpp.o -c /home/cat/mpp-main/yolo26videeotest/main2/src/license_plate_ocr.cpp
 
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/license_plate_ocr.cpp.i: cmake_force
@@ -169,7 +182,7 @@ CMakeFiles/rk_mp4_yolo_stage5.dir/src/license_plate_ocr.cpp.s: cmake_force
 
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_ocr_stage.cpp.o: CMakeFiles/rk_mp4_yolo_stage5.dir/flags.make
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_ocr_stage.cpp.o: ../src/plate_ocr_stage.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_ocr_stage.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_ocr_stage.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_ocr_stage.cpp.o -c /home/cat/mpp-main/yolo26videeotest/main2/src/plate_ocr_stage.cpp
 
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_ocr_stage.cpp.i: cmake_force
@@ -182,7 +195,7 @@ CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_ocr_stage.cpp.s: cmake_force
 
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o: CMakeFiles/rk_mp4_yolo_stage5.dir/flags.make
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o: ../src/postprocess_osd_thread.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o -c /home/cat/mpp-main/yolo26videeotest/main2/src/postprocess_osd_thread.cpp
 
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.i: cmake_force
@@ -195,7 +208,7 @@ CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.s: cmake_force
 
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/encoder_writer_thread.cpp.o: CMakeFiles/rk_mp4_yolo_stage5.dir/flags.make
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/encoder_writer_thread.cpp.o: ../src/encoder_writer_thread.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/rk_mp4_yolo_stage5.dir/src/encoder_writer_thread.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/rk_mp4_yolo_stage5.dir/src/encoder_writer_thread.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/rk_mp4_yolo_stage5.dir/src/encoder_writer_thread.cpp.o -c /home/cat/mpp-main/yolo26videeotest/main2/src/encoder_writer_thread.cpp
 
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/encoder_writer_thread.cpp.i: cmake_force
@@ -209,6 +222,7 @@ CMakeFiles/rk_mp4_yolo_stage5.dir/src/encoder_writer_thread.cpp.s: cmake_force
 # Object files for target rk_mp4_yolo_stage5
 rk_mp4_yolo_stage5_OBJECTS = \
 "CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o" \
+"CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.o" \
 "CMakeFiles/rk_mp4_yolo_stage5.dir/src/decoder_thread.cpp.o" \
 "CMakeFiles/rk_mp4_yolo_stage5.dir/src/bytetrack.cpp.o" \
 "CMakeFiles/rk_mp4_yolo_stage5.dir/src/rknn_input_runtime.cpp.o" \
@@ -223,6 +237,7 @@ rk_mp4_yolo_stage5_OBJECTS = \
 rk_mp4_yolo_stage5_EXTERNAL_OBJECTS =
 
 rk_mp4_yolo_stage5: CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o
+rk_mp4_yolo_stage5: CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.o
 rk_mp4_yolo_stage5: CMakeFiles/rk_mp4_yolo_stage5.dir/src/decoder_thread.cpp.o
 rk_mp4_yolo_stage5: CMakeFiles/rk_mp4_yolo_stage5.dir/src/bytetrack.cpp.o
 rk_mp4_yolo_stage5: CMakeFiles/rk_mp4_yolo_stage5.dir/src/rknn_input_runtime.cpp.o
@@ -236,7 +251,7 @@ rk_mp4_yolo_stage5: CMakeFiles/rk_mp4_yolo_stage5.dir/build.make
 rk_mp4_yolo_stage5: /usr/lib/aarch64-linux-gnu/libopencv_imgproc.so.4.5.1
 rk_mp4_yolo_stage5: /usr/lib/aarch64-linux-gnu/libopencv_core.so.4.5.1
 rk_mp4_yolo_stage5: CMakeFiles/rk_mp4_yolo_stage5.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable rk_mp4_yolo_stage5"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Linking CXX executable rk_mp4_yolo_stage5"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/rk_mp4_yolo_stage5.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

@@ -5,6 +5,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/cat/mpp-main/yolo26videeotest/main2/src/bytetrack.cpp" "/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles/rk_mp4_yolo_stage5.dir/src/bytetrack.cpp.o"
+  "/home/cat/mpp-main/yolo26videeotest/main2/src/camera_source_thread.cpp" "/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.o"
   "/home/cat/mpp-main/yolo26videeotest/main2/src/decoder_thread.cpp" "/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles/rk_mp4_yolo_stage5.dir/src/decoder_thread.cpp.o"
   "/home/cat/mpp-main/yolo26videeotest/main2/src/encoder_writer_thread.cpp" "/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles/rk_mp4_yolo_stage5.dir/src/encoder_writer_thread.cpp.o"
   "/home/cat/mpp-main/yolo26videeotest/main2/src/inference_thread.cpp" "/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles/rk_mp4_yolo_stage5.dir/src/inference_thread.cpp.o"

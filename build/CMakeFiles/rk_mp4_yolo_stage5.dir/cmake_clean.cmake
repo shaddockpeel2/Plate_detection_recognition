@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/rk_mp4_yolo_stage5.dir/src/bytetrack.cpp.o"
+  "CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.o"
   "CMakeFiles/rk_mp4_yolo_stage5.dir/src/decoder_thread.cpp.o"
   "CMakeFiles/rk_mp4_yolo_stage5.dir/src/encoder_writer_thread.cpp.o"
   "CMakeFiles/rk_mp4_yolo_stage5.dir/src/inference_thread.cpp.o"

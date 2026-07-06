@@ -4,6 +4,7 @@
 #include <condition_variable>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <deque>
 #include <memory>
 #include <mutex>
@@ -31,6 +32,7 @@ struct DecodedFrame {
   int format = 0;
   int dma_fd = -1;
   MppFrame frame = nullptr;
+  std::shared_ptr<void> owner;
 
   DecodedFrame() = default;
   DecodedFrame(const DecodedFrame&) = delete;

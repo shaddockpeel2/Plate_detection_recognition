@@ -13,6 +13,16 @@ CMakeFiles/rk_mp4_yolo_stage5.dir/src/bytetrack.cpp.o
  ../third_party/rockchip/mpp/include/rockchip/rk_type.h
  ../third_party/rockchip/rknn/RK3588/Linux/librknn_api/include/rknn_api.h
  /home/cat/mpp-main/yolo26videeotest/main2/src/bytetrack.cpp
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.o
+ ../include/camera_source_thread.hpp
+ ../include/decoder_thread.hpp
+ ../third_party/rockchip/mpp/include/rockchip/mpp_buffer.h
+ ../third_party/rockchip/mpp/include/rockchip/mpp_err.h
+ ../third_party/rockchip/mpp/include/rockchip/mpp_frame.h
+ ../third_party/rockchip/mpp/include/rockchip/mpp_meta.h
+ ../third_party/rockchip/mpp/include/rockchip/mpp_packet.h
+ ../third_party/rockchip/mpp/include/rockchip/rk_type.h
+ /home/cat/mpp-main/yolo26videeotest/main2/src/camera_source_thread.cpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/decoder_thread.cpp.o
  ../include/decoder_thread.hpp
  ../third_party/rockchip/mpp/include/rockchip/mpp_buffer.h
@@ -102,6 +112,7 @@ CMakeFiles/rk_mp4_yolo_stage5.dir/src/license_plate_ocr.cpp.o
  /usr/include/opencv4/opencv2/opencv_modules.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o
  ../include/bytetrack.hpp
+ ../include/camera_source_thread.hpp
  ../include/decoder_thread.hpp
  ../include/encoder_writer_thread.hpp
  ../include/inference_thread.hpp

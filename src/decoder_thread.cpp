@@ -378,6 +378,7 @@ DecodedFrame& DecodedFrame::operator=(DecodedFrame&& other) noexcept {
     format = other.format;
     dma_fd = other.dma_fd;
     frame = other.frame;
+    owner = std::move(other.owner);
     other.frame = nullptr;
     other.dma_fd = -1;
   }

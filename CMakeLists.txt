@@ -26,6 +26,7 @@ pkg_check_modules(FREETYPE REQUIRED freetype2)
 
 add_executable(rk_mp4_yolo_stage5
   src/main.cpp
+  src/camera_source_thread.cpp
   src/decoder_thread.cpp
   src/bytetrack.cpp
   src/rknn_input_runtime.cpp

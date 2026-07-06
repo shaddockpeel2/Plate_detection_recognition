@@ -1,6 +1,6 @@
 # RK3588 MP4 YOLO Pipeline
 
-这是一个面向 RK3588 / aarch64 Linux 的 C++ 视频推理流水线示例。项目从 MP4 文件读取视频帧，经过 Rockchip MPP 硬解、RGA 预处理、RKNN 推理、后处理/OSD，再通过 MPP 编码输出 MP4。目标是车牌识别，涉及yolo和ocr，目前完成车牌检测部分。
+这是一个面向 RK3588 / aarch64 Linux 的 C++ 视频推理流水线示例。项目支持两类输入：MP4 文件和 USB 摄像头。MP4 输入经过 FFmpeg 解封装、Rockchip MPP 硬解后进入推理链路；摄像头输入通过 V4L2 采集 `YUYV` 帧，并在输入分支内转换为 `NV12` 后接入同一条推理链路。后续统一经过 RGA 预处理、RKNN 推理、后处理/OCR/OSD，再通过 MPP 编码输出 MP4。目标是车牌识别，涉及 YOLO 和 OCR。
 
 ## 功能链路
 
@@ -8,12 +8,22 @@
 MP4 输入
   -> FFmpeg 解封装
   -> Rockchip MPP 硬解
+  -> DecodedFrameQueue
+
+USB 摄像头输入
+  -> V4L2 采集 YUYV
+  -> 输入分支转换为 NV12
+  -> DecodedFrameQueue
+
+DecodedFrameQueue
   -> RGA 图像预处理
   -> RKNN Runtime 推理
-  -> 后处理 / OSD
+  -> 后处理 / OCR / OSD
   -> Rockchip MPP 硬编码
   -> MP4 输出
 ```
+
+新增摄像头功能只作为输入分支接入 `DecodedFrameQueue`，尽量复用原有 MP4 后半段处理链路。
 
 ## 支持环境
 
@@ -160,6 +170,34 @@ video/output-video/
 ```
 
 该目录属于运行产物，默认被 `.gitignore` 忽略。
+
+## 运行摄像头推理并保存 MP4
+
+摄像头作为独立输入分支接入 `DecodedFrameQueue`，后续 RGA 预处理、RKNN 推理、YOLO/OCR、OSD 和 MPP 编码链路保持复用。
+
+当前第一版支持 USB 摄像头 `YUYV` 采集，并在摄像头输入模块内部转换为 `NV12` 后接入主链路。建议先使用当前摄像头支持的 `640x480 @ 25fps`：
+
+```bash
+./build/rk_mp4_yolo_stage5 \
+  --input camera \
+  --device /dev/video0 \
+  --width 640 \
+  --height 480 \
+  --fps 25 \
+  --frame-limit 300 \
+  --model ./models/car-v8/v8-car-relu-3588.rknn \
+  --output ./video/output-video/camera-output.mp4 \
+  --ocr-model ./ppocrv5/PP-OCRv5_mobile_rec_license_plate.rknn \
+  --ocr-vocab ./ppocrv5/model/license_plate_dict.txt
+```
+
+摄像头能力可用下面命令确认：
+
+```bash
+ls -l /dev/video*
+v4l2-ctl --list-devices
+v4l2-ctl -d /dev/video0 --list-formats-ext
+```
 
 ## 模型文件
 

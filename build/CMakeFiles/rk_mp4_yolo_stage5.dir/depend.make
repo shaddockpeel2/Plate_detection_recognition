@@ -13,6 +13,16 @@ CMakeFiles/rk_mp4_yolo_stage5.dir/src/bytetrack.cpp.o: ../third_party/rockchip/m
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/bytetrack.cpp.o: ../third_party/rockchip/rknn/RK3588/Linux/librknn_api/include/rknn_api.h
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/bytetrack.cpp.o: ../src/bytetrack.cpp
 
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.o: ../include/camera_source_thread.hpp
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.o: ../include/decoder_thread.hpp
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.o: ../third_party/rockchip/mpp/include/rockchip/mpp_buffer.h
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.o: ../third_party/rockchip/mpp/include/rockchip/mpp_err.h
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.o: ../third_party/rockchip/mpp/include/rockchip/mpp_frame.h
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.o: ../third_party/rockchip/mpp/include/rockchip/mpp_meta.h
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.o: ../third_party/rockchip/mpp/include/rockchip/mpp_packet.h
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.o: ../third_party/rockchip/mpp/include/rockchip/rk_type.h
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/camera_source_thread.cpp.o: ../src/camera_source_thread.cpp
+
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/decoder_thread.cpp.o: ../include/decoder_thread.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/decoder_thread.cpp.o: ../third_party/rockchip/mpp/include/rockchip/mpp_buffer.h
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/decoder_thread.cpp.o: ../third_party/rockchip/mpp/include/rockchip/mpp_err.h
@@ -101,6 +111,7 @@ CMakeFiles/rk_mp4_yolo_stage5.dir/src/license_plate_ocr.cpp.o: /usr/include/open
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/license_plate_ocr.cpp.o: /usr/include/opencv4/opencv2/opencv_modules.hpp
 
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: ../include/bytetrack.hpp
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: ../include/camera_source_thread.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: ../include/decoder_thread.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: ../include/encoder_writer_thread.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: ../include/inference_thread.hpp
