@@ -96,7 +96,7 @@ USE_VENDOR_RK_LIBS=ON
 
 也就是优先链接项目内的 `third_party/rockchip` 依赖。
 
-## 运行 Demo
+## 运行目标检测 Demo
 
 当前程序支持通过命令行参数指定输入视频、模型和输出路径：
 
@@ -119,6 +119,38 @@ argv[3] 输出视频路径
 
 ```text
 video/test-video/5s.mp4
+```
+
+输出目录：
+
+```text
+video/output-video/
+```
+
+该目录属于运行产物，默认被 `.gitignore` 忽略。
+
+## 运行目标检测+ocr Demo
+
+当前程序支持通过命令行参数指定输入视频、模型和输出路径：
+
+```bash
+./build/rk_mp4_yolo_stage5 "/home/cat/mpp-main/yolo26videeotest/main2/video/test-video/5s.mp4" "/home/cat/mpp-main/yolo26videeotest/main2/models/car-v8/v8-car-relu-3588.rknn" "/home/cat/mpp-main/yolo26videeotest/main2/output_stage5_chinese_osd.mp4" "/home/cat/mpp-main/yolo26videeotest/main2/ppocrv5/PP-OCRv5_mobile_rec_license_plate.rknn" "/home/cat/mpp-main/yolo26videeotest/main2/ppocrv5/model/license_plate_dict.txt" 30 90
+```
+
+参数顺序：
+
+```text
+argv[1] 输入视频路径
+argv[2] RKNN 模型路径
+argv[3] 输出视频路径
+argv[4] ocr模路径
+argv[5] ocr文字符
+```
+
+当前仓库保留 demo 输入视频：
+
+```text
+video/test-video/8s.mp4
 ```
 
 输出目录：
@@ -189,6 +221,11 @@ ldd ./build/rk_mp4_yolo_stage5 | grep -E 'rockchip_mpp|rga|rknn'
 ### 3. 不能在非 RK3588 机器上运行
 
 这是预期行为。本项目依赖 RK3588 板端的 MPP、RGA、RKNN Runtime 和对应驱动环境。
+
+### 4. 当前项目还在完善，理论上摄像头识别更快，他可能不需要解码 ，因为有的直接输出V4L2数据
+
+
+
 
 ## 开源注意事项
 
