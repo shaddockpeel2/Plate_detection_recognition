@@ -939,7 +939,8 @@ void postprocess_osd_thread(const PostprocessOsdConfig& config,
                             StopFlag& stop,
                             InferenceResultQueue& input,
                             OsdFrameQueue& output,
-                            UploadEventQueue* upload_events) {
+                            UploadEventQueue* upload_events,
+                            OledPlateQueue* oled_events) {
   const auto stage_start = std::chrono::steady_clock::now();
   int64_t processed = 0;
   int64_t total_detections = 0;
@@ -985,6 +986,20 @@ void postprocess_osd_thread(const PostprocessOsdConfig& config,
       ocr_attempted += ocr_stats.attempted;
       ocr_recognized += ocr_stats.recognized;
       ocr_cache_hits += ocr_stats.cache_hits;
+    }
+
+    if (config.oled_display_enabled && oled_events != nullptr) {
+      for (const auto& detection : detections) {
+        if (!detection.plate_recognized || detection.plate_text.empty()) {
+          continue;
+        }
+        OledPlateEvent event;
+        event.plate_text = detection.plate_text;
+        event.plate_score = detection.plate_score;
+        event.track_id = detection.track_id;
+        event.frame_id = inference->frame->source->frame_id;
+        oled_events->try_push(std::move(event));
+      }
     }
 
     const auto selected_upload_events = upload_gate.select_events(inference->frame->source, detections);

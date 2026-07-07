@@ -2,6 +2,7 @@
 
 #include "bytetrack.hpp"
 #include "decoder_thread.hpp"
+#include "oled_display_thread.hpp"
 #include "pipeline_types.hpp"
 #include "plate_ocr_stage.hpp"
 #include "upload_event.hpp"
@@ -30,6 +31,7 @@ struct PostprocessOsdConfig {
   PlateOcrStageConfig plate_ocr;
   ByteTrackConfig tracker;
   UploadEventConfig upload_event;
+  bool oled_display_enabled = false;
   bool verbose = false;
   std::size_t output_queue_capacity = 4;
 };
@@ -38,6 +40,7 @@ void postprocess_osd_thread(const PostprocessOsdConfig& config,
                             StopFlag& stop,
                             InferenceResultQueue& input,
                             OsdFrameQueue& output,
-                            UploadEventQueue* upload_events = nullptr);
+                            UploadEventQueue* upload_events = nullptr,
+                            OledPlateQueue* oled_events = nullptr);
 
 }  // namespace rkai

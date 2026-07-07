@@ -116,6 +116,7 @@ CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: ../include/decoder_thread.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: ../include/encoder_writer_thread.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: ../include/inference_thread.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: ../include/license_plate_ocr.hpp
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: ../include/oled_display_thread.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: ../include/pipeline_types.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: ../include/plate_ocr_stage.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: ../include/postprocess_osd_thread.hpp
@@ -160,6 +161,18 @@ CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: /usr/include/opencv4/opencv2/c
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: /usr/include/opencv4/opencv2/core/version.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: /usr/include/opencv4/opencv2/core/vsx_utils.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: /usr/include/opencv4/opencv2/opencv_modules.hpp
+
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/oled_display_thread.cpp.o: ../include/decoder_thread.hpp
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/oled_display_thread.cpp.o: ../include/oled_display_thread.hpp
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/oled_display_thread.cpp.o: ../third_party/rockchip/mpp/include/rockchip/mpp_buffer.h
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/oled_display_thread.cpp.o: ../third_party/rockchip/mpp/include/rockchip/mpp_err.h
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/oled_display_thread.cpp.o: ../third_party/rockchip/mpp/include/rockchip/mpp_frame.h
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/oled_display_thread.cpp.o: ../third_party/rockchip/mpp/include/rockchip/mpp_meta.h
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/oled_display_thread.cpp.o: ../third_party/rockchip/mpp/include/rockchip/mpp_packet.h
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/oled_display_thread.cpp.o: ../third_party/rockchip/mpp/include/rockchip/rk_type.h
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/oled_display_thread.cpp.o: ../src/oled_display_thread.cpp
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/oled_display_thread.cpp.o: /usr/include/freetype2/freetype/config/ftheader.h
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/oled_display_thread.cpp.o: /usr/include/freetype2/ft2build.h
 
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_ocr_stage.cpp.o: ../include/decoder_thread.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_ocr_stage.cpp.o: ../include/license_plate_ocr.hpp
@@ -217,6 +230,7 @@ CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_ocr_stage.cpp.o: /usr/include/opencv
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o: ../include/bytetrack.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o: ../include/decoder_thread.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o: ../include/license_plate_ocr.hpp
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o: ../include/oled_display_thread.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o: ../include/pipeline_types.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o: ../include/plate_ocr_stage.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o: ../include/postprocess_osd_thread.hpp

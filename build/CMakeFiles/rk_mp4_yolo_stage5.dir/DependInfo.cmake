@@ -11,6 +11,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/cat/mpp-main/yolo26videeotest/main2/src/inference_thread.cpp" "/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles/rk_mp4_yolo_stage5.dir/src/inference_thread.cpp.o"
   "/home/cat/mpp-main/yolo26videeotest/main2/src/license_plate_ocr.cpp" "/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles/rk_mp4_yolo_stage5.dir/src/license_plate_ocr.cpp.o"
   "/home/cat/mpp-main/yolo26videeotest/main2/src/main.cpp" "/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o"
+  "/home/cat/mpp-main/yolo26videeotest/main2/src/oled_display_thread.cpp" "/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles/rk_mp4_yolo_stage5.dir/src/oled_display_thread.cpp.o"
   "/home/cat/mpp-main/yolo26videeotest/main2/src/plate_ocr_stage.cpp" "/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_ocr_stage.cpp.o"
   "/home/cat/mpp-main/yolo26videeotest/main2/src/postprocess_osd_thread.cpp" "/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o"
   "/home/cat/mpp-main/yolo26videeotest/main2/src/preprocess_thread.cpp" "/home/cat/mpp-main/yolo26videeotest/main2/build/CMakeFiles/rk_mp4_yolo_stage5.dir/src/preprocess_thread.cpp.o"

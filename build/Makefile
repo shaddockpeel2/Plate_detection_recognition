@@ -331,6 +331,33 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/oled_display_thread.o: src/oled_display_thread.cpp.o
+
+.PHONY : src/oled_display_thread.o
+
+# target to build an object file
+src/oled_display_thread.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/oled_display_thread.cpp.o
+.PHONY : src/oled_display_thread.cpp.o
+
+src/oled_display_thread.i: src/oled_display_thread.cpp.i
+
+.PHONY : src/oled_display_thread.i
+
+# target to preprocess a source file
+src/oled_display_thread.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/oled_display_thread.cpp.i
+.PHONY : src/oled_display_thread.cpp.i
+
+src/oled_display_thread.s: src/oled_display_thread.cpp.s
+
+.PHONY : src/oled_display_thread.s
+
+# target to generate assembly for a file
+src/oled_display_thread.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/oled_display_thread.cpp.s
+.PHONY : src/oled_display_thread.cpp.s
+
 src/plate_ocr_stage.o: src/plate_ocr_stage.cpp.o
 
 .PHONY : src/plate_ocr_stage.o
@@ -496,6 +523,9 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/oled_display_thread.o"
+	@echo "... src/oled_display_thread.i"
+	@echo "... src/oled_display_thread.s"
 	@echo "... src/plate_ocr_stage.o"
 	@echo "... src/plate_ocr_stage.i"
 	@echo "... src/plate_ocr_stage.s"

@@ -2,6 +2,7 @@
 #include "decoder_thread.hpp"
 #include "encoder_writer_thread.hpp"
 #include "inference_thread.hpp"
+#include "oled_display_thread.hpp"
 #include "pipeline_types.hpp"
 #include "postprocess_osd_thread.hpp"
 #include "preprocess_thread.hpp"
@@ -48,6 +49,11 @@ int parse_named_int_arg(int argc, char** argv, const char* flag, int fallback) {
   return value ? std::atoi(value) : fallback;
 }
 
+int parse_named_int_auto_arg(int argc, char** argv, const char* flag, int fallback) {
+  const char* value = flag_value(argc, argv, flag, nullptr);
+  return value ? static_cast<int>(std::strtol(value, nullptr, 0)) : fallback;
+}
+
 float parse_named_float_arg(int argc, char** argv, const char* flag, float fallback) {
   const char* value = flag_value(argc, argv, flag, nullptr);
   return value ? static_cast<float>(std::atof(value)) : fallback;
@@ -59,6 +65,19 @@ int parse_int_arg(int argc, char** argv, int index, int fallback) {
 
 float parse_float_arg(int argc, char** argv, int index, float fallback) {
   return argc > index ? static_cast<float>(std::atof(argv[index])) : fallback;
+}
+
+bool looks_like_number(const char* value) {
+  if (value == nullptr || *value == '\0') {
+    return false;
+  }
+  char* end = nullptr;
+  std::strtof(value, &end);
+  return end != value && *end == '\0';
+}
+
+int parse_int_auto_arg(int argc, char** argv, int index, int fallback) {
+  return argc > index ? static_cast<int>(std::strtol(argv[index], nullptr, 0)) : fallback;
 }
 
 }  // namespace
@@ -120,9 +139,11 @@ int main(int argc, char** argv) {
   postprocess_config.plate_ocr.recognizer.verbose = false;
   postprocess_config.plate_ocr.ocr_interval_frames = std::max(1, named_args ? parse_named_int_arg(argc, argv, "--ocr-interval", 15) : parse_int_arg(argc, argv, 6, 15));
   postprocess_config.plate_ocr.max_cache_age_frames = std::max(1, named_args ? parse_named_int_arg(argc, argv, "--ocr-cache", 90) : parse_int_arg(argc, argv, 7, 90));
+  const bool positional_arg8_is_number = !named_args && argc > 8 && looks_like_number(argv[8]);
   postprocess_config.plate_ocr.min_ocr_score = named_args ? static_cast<float>(std::atof(flag_value(argc, argv, "--ocr-min-score", "0.80")))
-                                                          : parse_float_arg(argc, argv, 8, 0.80f);
-  postprocess_config.plate_ocr.verbose = named_args ? has_flag(argc, argv, "--ocr-verbose") : (argc > 9 && arg_enabled(argv[9]));
+                                                          : (positional_arg8_is_number ? parse_float_arg(argc, argv, 8, 0.80f) : 0.80f);
+  postprocess_config.plate_ocr.verbose = named_args ? has_flag(argc, argv, "--ocr-verbose")
+                                                    : (positional_arg8_is_number && argc > 9 && arg_enabled(argv[9]));
   postprocess_config.upload_event.enabled = arg_enabled(flag_value(argc, argv, "--upload-event-log", "off"));
   postprocess_config.upload_event.verbose = postprocess_config.upload_event.enabled;
   postprocess_config.upload_event.device_id = flag_value(argc, argv, "--device-id", "rk3588-001");
@@ -134,6 +155,18 @@ int main(int argc, char** argv) {
       std::max(0, parse_named_int_arg(argc, argv, "--upload-plate-cooldown-frames", 1800));
   const std::size_t upload_queue_capacity =
       static_cast<std::size_t>(std::max(1, parse_named_int_arg(argc, argv, "--upload-queue-capacity", 32)));
+  rkai::OledDisplayConfig oled_config;
+  const int positional_oled_index = positional_arg8_is_number ? 10 : 8;
+  oled_config.enabled = named_args ? arg_enabled(flag_value(argc, argv, "--oled", "off"))
+                                   : (argc > positional_oled_index && arg_enabled(argv[positional_oled_index]));
+  oled_config.verbose = named_args ? has_flag(argc, argv, "--oled-verbose") : false;
+  oled_config.i2c_device = named_args ? flag_value(argc, argv, "--oled-i2c", "/dev/i2c-5")
+                                      : (argc > positional_oled_index + 1 ? argv[positional_oled_index + 1] : "/dev/i2c-5");
+  oled_config.i2c_address = named_args ? parse_named_int_auto_arg(argc, argv, "--oled-addr", 0x3c)
+                                       : parse_int_auto_arg(argc, argv, positional_oled_index + 2, 0x3c);
+  oled_config.queue_capacity = static_cast<std::size_t>(std::max(1, parse_named_int_arg(argc, argv, "--oled-queue-capacity", 2)));
+  oled_config.min_refresh_interval_ms = std::max(0, parse_named_int_arg(argc, argv, "--oled-refresh-ms", 120));
+  postprocess_config.oled_display_enabled = oled_config.enabled;
   rkai::UploadEventThreadConfig upload_thread_config;
   upload_thread_config.enabled = postprocess_config.upload_event.enabled;
   upload_thread_config.verbose = postprocess_config.upload_event.verbose;
@@ -185,6 +218,7 @@ int main(int argc, char** argv) {
   rkai::InferenceResultQueue inference_results(inference_config.output_queue_capacity);
   rkai::OsdFrameQueue osd_frames(postprocess_config.output_queue_capacity);
   rkai::UploadEventQueue upload_events(upload_queue_capacity);
+  rkai::OledPlateQueue oled_events(oled_config.queue_capacity);
 
   const auto pipeline_start = std::chrono::steady_clock::now();
   std::thread source([&] {
@@ -205,12 +239,17 @@ int main(int argc, char** argv) {
                                  stop,
                                  inference_results,
                                  osd_frames,
-                                 upload_thread_config.enabled ? &upload_events : nullptr);
+                                 upload_thread_config.enabled ? &upload_events : nullptr,
+                                 oled_config.enabled ? &oled_events : nullptr);
   });
   std::thread writer([&] { rkai::encoder_writer_thread(writer_config, stop, osd_frames); });
   std::thread uploader;
   if (upload_thread_config.enabled) {
     uploader = std::thread([&] { rkai::upload_event_thread(upload_thread_config, stop, upload_events); });
+  }
+  std::thread oled_display;
+  if (oled_config.enabled) {
+    oled_display = std::thread([&] { rkai::oled_display_thread(oled_config, stop, oled_events); });
   }
 
   if (source.joinable()) {
@@ -226,8 +265,12 @@ int main(int argc, char** argv) {
     postprocess.join();
   }
   upload_events.close();
+  oled_events.close();
   if (uploader.joinable()) {
     uploader.join();
+  }
+  if (oled_display.joinable()) {
+    oled_display.join();
   }
   if (writer.joinable()) {
     writer.join();
