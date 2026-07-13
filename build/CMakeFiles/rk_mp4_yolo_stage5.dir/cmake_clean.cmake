@@ -8,6 +8,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o"
   "CMakeFiles/rk_mp4_yolo_stage5.dir/src/oled_display_thread.cpp.o"
   "CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_ocr_stage.cpp.o"
+  "CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_relay.cpp.o"
   "CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o"
   "CMakeFiles/rk_mp4_yolo_stage5.dir/src/preprocess_thread.cpp.o"
   "CMakeFiles/rk_mp4_yolo_stage5.dir/src/rknn_input_runtime.cpp.o"

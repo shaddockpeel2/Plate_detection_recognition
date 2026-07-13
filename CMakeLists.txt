@@ -34,6 +34,7 @@ add_executable(rk_mp4_yolo_stage5
   src/inference_thread.cpp
   src/license_plate_ocr.cpp
   src/plate_ocr_stage.cpp
+  src/plate_relay.cpp
   src/oled_display_thread.cpp
   src/upload_event.cpp
   src/postprocess_osd_thread.cpp

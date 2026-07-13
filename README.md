@@ -532,7 +532,53 @@ ldd ./build/rk_mp4_yolo_stage5 | grep -E 'rockchip_mpp|rga|rknn'
 
 ### 4. 当前项目还在完善，理论上摄像头识别更快，他可能不需要解码 ，因为有的直接输出V4L2数据
 
+## 车牌白名单继电器
 
+继电器功能默认关闭。启用后，OCR 识别到白名单车牌并满足置信度门槛时，第 1 路继电器会吸合 2 秒后强制释放。
+
+硬件参数已经验证：`/dev/ttyS0`、`9600 8N1`、Modbus 地址 `1`、线圈地址 `0`。第 1 路继电器的 `COM0/NO0` 当前控制 3.3V LED。
+
+白名单文件是 `config/plate_whitelist.txt`，每行写一个车牌；空行和以 `#` 开头的注释行会忽略。例如：
+
+```text
+京A12345
+粤B12345D
+```
+
+启用示例：
+
+```bash
+./build/rk_mp4_yolo_stage5 \
+  --input mp4 \
+  --video ./video/test-video/5s.mp4 \
+  --model ./models/car-v8/v8-car-relu-3588.rknn \
+  --output ./video/output-video/relay-test.mp4 \
+  --ocr-model ./ppocrv5/PP-OCRv5_mobile_rec_license_plate.rknn \
+  --ocr-vocab ./ppocrv5/model/license_plate_dict.txt \
+  --relay-enabled on \
+  --relay-whitelist ./config/plate_whitelist.txt
+```
+
+默认安全策略：检测分数至少 `0.50`、OCR 分数至少 `0.90`、同一车牌 `30` 秒内只允许触发一次。继电器吸合时不接受新的触发请求，也不会延长当前 2 秒脉冲。程序启动、退出、串口错误时都会发送关闭第 1 路的命令。
+
+可选参数：
+
+```text
+--relay-device /dev/ttyS0
+--relay-baud 9600
+--relay-address 1
+--relay-channel 0
+--relay-pulse-ms 2000
+--relay-plate-cooldown-sec 30
+--relay-min-detect-score 0.50
+--relay-min-plate-score 0.90
+--relay-timeout-ms 500
+--relay-verbose
+```
+
+### 5. 白名单配置错误
+
+如果启用继电器后白名单文件不存在或为空，程序会记录 `[RELAY] whitelist gate disabled`，不会触发继电器；视频识别仍会继续运行。
 
 
 ## 开源注意事项

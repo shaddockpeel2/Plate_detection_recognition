@@ -4,6 +4,7 @@
 #include "inference_thread.hpp"
 #include "oled_display_thread.hpp"
 #include "pipeline_types.hpp"
+#include "plate_relay.hpp"
 #include "postprocess_osd_thread.hpp"
 #include "preprocess_thread.hpp"
 #include "rknn_input_runtime.hpp"
@@ -83,6 +84,40 @@ int parse_int_auto_arg(int argc, char** argv, int index, int fallback) {
 }  // namespace
 
 int main(int argc, char** argv) {
+  /*
+   * 启动参数有两种模式：
+   *
+   * 1. 旧位置参数模式（保持兼容，适合已有脚本）：
+   *    rk_mp4_yolo_stage5 <视频> <YOLO模型> <输出MP4> <OCR模型> <OCR字典> [OCR间隔帧] [OCR缓存帧] [OCR最低分] [OCR日志]
+   *    例如：
+   *    ./build/rk_mp4_yolo_stage5 ./video/test-video/5s.mp4 ./models/car-v8/v8-car-relu-3588.rknn \
+   *      ./output.mp4 ./ppocrv5/PP-OCRv5_mobile_rec_license_plate.rknn ./ppocrv5/model/license_plate_dict.txt 15 90
+   *
+   * 2. 推荐命名参数模式。必须提供 --input mp4 或 --input camera：
+   *    输入/推理：
+   *      --input mp4|camera     选择视频文件或 USB 摄像头输入。
+   *      --video <路径>         MP4 输入文件；摄像头模式下不使用。
+   *      --device /dev/video0   摄像头设备；--width、--height、--fps 设置采集格式。
+   *      --model <路径>         YOLO RKNN 模型；--output <路径> 设置输出 MP4。
+   *    OCR：
+   *      --ocr-model <路径>     启用并指定车牌 OCR RKNN 模型。
+   *      --ocr-vocab <路径>     OCR 字典文件。
+   *      --ocr-interval <帧数>  每隔多少帧重新 OCR 一次，默认 15；越小越及时但消耗更多算力。
+   *      --ocr-cache <帧数>     同一目标识别结果的缓存上限，默认 90。
+   *      --ocr-min-score <0~1>  OCR 最低置信度，默认 0.80。
+   *    白名单继电器（默认关闭）：
+   *      --relay-enabled on     显式启用；未提供时绝不访问 /dev/ttyS0。
+   *      --relay-whitelist <路径> 每行一个车牌的白名单文件。
+   *      --relay-pulse-ms 2000  白名单命中后吸合时间；到期强制关闭。
+   *      --relay-plate-cooldown-sec 30 同一车牌允许再次触发前的等待时间。
+   *      --relay-min-detect-score 0.50、--relay-min-plate-score 0.90 设置检测/OCR 门槛。
+   *      --relay-device /dev/ttyS0、--relay-baud 9600、--relay-address 1、--relay-channel 0 为已验证的硬件参数。
+   *    其他可选功能：
+   *      --oled on              启用 OLED；--oled-i2c、--oled-addr 设置其 I2C 参数。
+   *      --upload-event-log on  启用抓图/上传事件；--mqtt on 及 --mqtt-* 配置 MQTT。
+   *
+   * 推荐的继电器运行方式见 README 中“车牌白名单继电器”章节。
+   */
   const char* default_video = "/home/cat/mpp-main/yolo26videeotest/main2/video/output_5s.mp4";
   const char* default_model = "/home/cat/mpp-main/yolo26videeotest/main2/car-v8/v8-car-relu-3588.rknn";
   const char* default_output = "/home/cat/mpp-main/yolo26videeotest/main2/output_stage5.mp4";
@@ -155,6 +190,23 @@ int main(int argc, char** argv) {
       std::max(0, parse_named_int_arg(argc, argv, "--upload-plate-cooldown-frames", 1800));
   const std::size_t upload_queue_capacity =
       static_cast<std::size_t>(std::max(1, parse_named_int_arg(argc, argv, "--upload-queue-capacity", 32)));
+  postprocess_config.plate_relay.enabled = named_args && arg_enabled(flag_value(argc, argv, "--relay-enabled", "off"));
+  postprocess_config.plate_relay.verbose = has_flag(argc, argv, "--relay-verbose");
+  postprocess_config.plate_relay.whitelist_path =
+      flag_value(argc, argv, "--relay-whitelist", "./config/plate_whitelist.txt");
+  postprocess_config.plate_relay.min_detect_score = parse_named_float_arg(argc, argv, "--relay-min-detect-score", 0.50f);
+  postprocess_config.plate_relay.min_plate_score = parse_named_float_arg(argc, argv, "--relay-min-plate-score", 0.90f);
+  postprocess_config.plate_relay.plate_cooldown_sec =
+      std::max(0, parse_named_int_arg(argc, argv, "--relay-plate-cooldown-sec", 30));
+  rkai::RelayControllerConfig relay_config;
+  relay_config.enabled = postprocess_config.plate_relay.enabled;
+  relay_config.verbose = postprocess_config.plate_relay.verbose;
+  relay_config.device = flag_value(argc, argv, "--relay-device", "/dev/ttyS0");
+  relay_config.baud_rate = parse_named_int_arg(argc, argv, "--relay-baud", 9600);
+  relay_config.slave_address = parse_named_int_arg(argc, argv, "--relay-address", 1);
+  relay_config.coil_address = parse_named_int_arg(argc, argv, "--relay-channel", 0);
+  relay_config.pulse_ms = std::max(1, parse_named_int_arg(argc, argv, "--relay-pulse-ms", 2000));
+  relay_config.io_timeout_ms = std::max(50, parse_named_int_arg(argc, argv, "--relay-timeout-ms", 500));
   rkai::OledDisplayConfig oled_config;
   const int positional_oled_index = positional_arg8_is_number ? 10 : 8;
   oled_config.enabled = named_args ? arg_enabled(flag_value(argc, argv, "--oled", "off"))
@@ -219,6 +271,7 @@ int main(int argc, char** argv) {
   rkai::OsdFrameQueue osd_frames(postprocess_config.output_queue_capacity);
   rkai::UploadEventQueue upload_events(upload_queue_capacity);
   rkai::OledPlateQueue oled_events(oled_config.queue_capacity);
+  rkai::RelayEventQueue relay_events(1);
 
   const auto pipeline_start = std::chrono::steady_clock::now();
   std::thread source([&] {
@@ -234,13 +287,18 @@ int main(int argc, char** argv) {
   std::thread inference([&] {
     rkai::inference_thread(inference_config, stop, preprocessed_frames, inference_results, rknn_inputs);
   });
+  std::thread relay_controller;
+  if (relay_config.enabled) {
+    relay_controller = std::thread([&] { rkai::relay_controller_thread(relay_config, stop, relay_events); });
+  }
   std::thread postprocess([&] {
     rkai::postprocess_osd_thread(postprocess_config,
                                  stop,
                                  inference_results,
                                  osd_frames,
                                  upload_thread_config.enabled ? &upload_events : nullptr,
-                                 oled_config.enabled ? &oled_events : nullptr);
+                                 oled_config.enabled ? &oled_events : nullptr,
+                                 relay_config.enabled ? &relay_events : nullptr);
   });
   std::thread writer([&] { rkai::encoder_writer_thread(writer_config, stop, osd_frames); });
   std::thread uploader;
@@ -266,11 +324,15 @@ int main(int argc, char** argv) {
   }
   upload_events.close();
   oled_events.close();
+  relay_events.close();
   if (uploader.joinable()) {
     uploader.join();
   }
   if (oled_display.joinable()) {
     oled_display.join();
+  }
+  if (relay_controller.joinable()) {
+    relay_controller.join();
   }
   if (writer.joinable()) {
     writer.join();

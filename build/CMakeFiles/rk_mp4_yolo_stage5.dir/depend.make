@@ -119,6 +119,7 @@ CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: ../include/license_plate_ocr.h
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: ../include/oled_display_thread.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: ../include/pipeline_types.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: ../include/plate_ocr_stage.hpp
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: ../include/plate_relay.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: ../include/postprocess_osd_thread.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: ../include/preprocess_thread.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/main.cpp.o: ../include/rknn_input_runtime.hpp
@@ -227,12 +228,25 @@ CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_ocr_stage.cpp.o: /usr/include/opencv
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_ocr_stage.cpp.o: /usr/include/opencv4/opencv2/core/vsx_utils.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_ocr_stage.cpp.o: /usr/include/opencv4/opencv2/opencv_modules.hpp
 
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_relay.cpp.o: ../include/decoder_thread.hpp
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_relay.cpp.o: ../include/pipeline_types.hpp
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_relay.cpp.o: ../include/plate_relay.hpp
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_relay.cpp.o: ../third_party/rockchip/mpp/include/rockchip/mpp_buffer.h
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_relay.cpp.o: ../third_party/rockchip/mpp/include/rockchip/mpp_err.h
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_relay.cpp.o: ../third_party/rockchip/mpp/include/rockchip/mpp_frame.h
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_relay.cpp.o: ../third_party/rockchip/mpp/include/rockchip/mpp_meta.h
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_relay.cpp.o: ../third_party/rockchip/mpp/include/rockchip/mpp_packet.h
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_relay.cpp.o: ../third_party/rockchip/mpp/include/rockchip/rk_type.h
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_relay.cpp.o: ../third_party/rockchip/rknn/RK3588/Linux/librknn_api/include/rknn_api.h
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_relay.cpp.o: ../src/plate_relay.cpp
+
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o: ../include/bytetrack.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o: ../include/decoder_thread.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o: ../include/license_plate_ocr.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o: ../include/oled_display_thread.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o: ../include/pipeline_types.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o: ../include/plate_ocr_stage.hpp
+CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o: ../include/plate_relay.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o: ../include/postprocess_osd_thread.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o: ../include/upload_event.hpp
 CMakeFiles/rk_mp4_yolo_stage5.dir/src/postprocess_osd_thread.cpp.o: ../third_party/rockchip/mpp/include/rockchip/mpp_buffer.h

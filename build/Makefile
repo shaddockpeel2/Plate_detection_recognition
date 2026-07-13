@@ -385,6 +385,33 @@ src/plate_ocr_stage.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_ocr_stage.cpp.s
 .PHONY : src/plate_ocr_stage.cpp.s
 
+src/plate_relay.o: src/plate_relay.cpp.o
+
+.PHONY : src/plate_relay.o
+
+# target to build an object file
+src/plate_relay.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_relay.cpp.o
+.PHONY : src/plate_relay.cpp.o
+
+src/plate_relay.i: src/plate_relay.cpp.i
+
+.PHONY : src/plate_relay.i
+
+# target to preprocess a source file
+src/plate_relay.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_relay.cpp.i
+.PHONY : src/plate_relay.cpp.i
+
+src/plate_relay.s: src/plate_relay.cpp.s
+
+.PHONY : src/plate_relay.s
+
+# target to generate assembly for a file
+src/plate_relay.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/rk_mp4_yolo_stage5.dir/build.make CMakeFiles/rk_mp4_yolo_stage5.dir/src/plate_relay.cpp.s
+.PHONY : src/plate_relay.cpp.s
+
 src/postprocess_osd_thread.o: src/postprocess_osd_thread.cpp.o
 
 .PHONY : src/postprocess_osd_thread.o
@@ -529,6 +556,9 @@ help:
 	@echo "... src/plate_ocr_stage.o"
 	@echo "... src/plate_ocr_stage.i"
 	@echo "... src/plate_ocr_stage.s"
+	@echo "... src/plate_relay.o"
+	@echo "... src/plate_relay.i"
+	@echo "... src/plate_relay.s"
 	@echo "... src/postprocess_osd_thread.o"
 	@echo "... src/postprocess_osd_thread.i"
 	@echo "... src/postprocess_osd_thread.s"

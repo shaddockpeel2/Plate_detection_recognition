@@ -5,6 +5,7 @@
 #include "oled_display_thread.hpp"
 #include "pipeline_types.hpp"
 #include "plate_ocr_stage.hpp"
+#include "plate_relay.hpp"
 #include "upload_event.hpp"
 
 #include <cstddef>
@@ -29,6 +30,7 @@ struct PostprocessOsdConfig {
   int line_thickness = 3;
   bool draw_osd = true;
   PlateOcrStageConfig plate_ocr;
+  PlateRelayGateConfig plate_relay;
   ByteTrackConfig tracker;
   UploadEventConfig upload_event;
   bool oled_display_enabled = false;
@@ -41,6 +43,7 @@ void postprocess_osd_thread(const PostprocessOsdConfig& config,
                             InferenceResultQueue& input,
                             OsdFrameQueue& output,
                             UploadEventQueue* upload_events = nullptr,
-                            OledPlateQueue* oled_events = nullptr);
+                            OledPlateQueue* oled_events = nullptr,
+                            RelayEventQueue* relay_events = nullptr);
 
 }  // namespace rkai

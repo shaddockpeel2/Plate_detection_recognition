@@ -940,7 +940,8 @@ void postprocess_osd_thread(const PostprocessOsdConfig& config,
                             InferenceResultQueue& input,
                             OsdFrameQueue& output,
                             UploadEventQueue* upload_events,
-                            OledPlateQueue* oled_events) {
+                            OledPlateQueue* oled_events,
+                            RelayEventQueue* relay_events) {
   const auto stage_start = std::chrono::steady_clock::now();
   int64_t processed = 0;
   int64_t total_detections = 0;
@@ -954,6 +955,11 @@ void postprocess_osd_thread(const PostprocessOsdConfig& config,
   int64_t ocr_cache_hits = 0;
   ByteTracker tracker(config.tracker);
   UploadEventGate upload_gate(config.upload_event);
+  PlateRelayGate relay_gate(config.plate_relay);
+  const bool relay_gate_ready = !config.plate_relay.enabled || relay_gate.init();
+  if (!relay_gate_ready) {
+    std::fprintf(stderr, "[RELAY] whitelist gate disabled: %s\n", relay_gate.last_error().c_str());
+  }
   PlateOcrStage plate_ocr;
   const bool plate_ocr_enabled = config.plate_ocr.enabled && plate_ocr.init(config.plate_ocr);
   TextBitmapCache text_cache;
@@ -986,6 +992,15 @@ void postprocess_osd_thread(const PostprocessOsdConfig& config,
       ocr_attempted += ocr_stats.attempted;
       ocr_recognized += ocr_stats.recognized;
       ocr_cache_hits += ocr_stats.cache_hits;
+    }
+
+    if (config.plate_relay.enabled && relay_events != nullptr && relay_gate_ready) {
+      for (const auto& detection : detections) {
+        RelayEvent event;
+        if (relay_gate.select_event(detection, inference->frame->source->frame_id, &event) && relay_events->try_push(event)) {
+          relay_gate.commit_event(event);
+        }
+      }
     }
 
     if (config.oled_display_enabled && oled_events != nullptr) {
